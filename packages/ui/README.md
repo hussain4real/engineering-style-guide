@@ -1,12 +1,12 @@
-# @company/ui
+# @milaha/ui
 
-Shared React primitives, brand tokens, Tailwind preset, and Storybook documentation for company frontend teams.
+Shared React primitives, MILAHA brand tokens, Tailwind preset, and Storybook documentation for frontend teams.
 
 ## Usage
 
 ```tsx
-import { Button } from "@company/ui";
-import "@company/ui/styles.css";
+import { Button } from "@milaha/ui";
+import "@milaha/ui/styles.css";
 
 export function SaveAction() {
   return <Button>Save changes</Button>;
@@ -18,14 +18,14 @@ export function SaveAction() {
 Use the shared preset in a consuming app:
 
 ```ts
-import companyPreset from "@company/ui/tailwind-preset";
+import companyPreset from "@milaha/ui/tailwind-preset";
 
 export default {
   presets: [companyPreset],
   content: [
     "./app/**/*.{ts,tsx}",
     "./components/**/*.{ts,tsx}",
-    "./node_modules/@company/ui/dist/**/*.js"
+    "./node_modules/@milaha/ui/dist/**/*.js"
   ]
 };
 ```

@@ -11,14 +11,14 @@
   ],
   "scripts": {
     "dev": "npm run storybook",
-    "storybook": "npm run storybook -w @company/ui",
-    "build-storybook": "npm run build-storybook -w @company/ui",
-    "build": "npm run build -w @company/ui",
-    "typecheck": "npm run typecheck -w @company/ui",
-    "test": "npm run test -w @company/ui",
-    "test:run": "npm run test:run -w @company/ui",
-    "test:storybook": "npm run test:storybook -w @company/ui",
-    "test:storybook:run": "npm run test:storybook:run -w @company/ui",
+    "storybook": "npm run storybook -w @milaha/ui",
+    "build-storybook": "npm run build-storybook -w @milaha/ui",
+    "build": "npm run build -w @milaha/ui",
+    "typecheck": "npm run typecheck -w @milaha/ui",
+    "test": "npm run test -w @milaha/ui",
+    "test:run": "npm run test:run -w @milaha/ui",
+    "test:storybook": "npm run test:storybook -w @milaha/ui",
+    "test:storybook:run": "npm run test:storybook:run -w @milaha/ui",
     "ci": "npm run typecheck && npm run build && npm run test:run && npm run build-storybook && npm run test:storybook:run"
   }
 }

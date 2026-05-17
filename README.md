@@ -1,12 +1,12 @@
 # Engineering Style Guide
 
-This workspace implements the company engineering style guide as a shared React/Next.js UI package documented through Storybook.
+This workspace implements the MILAHA engineering style guide as a shared React/Next.js UI package documented through Storybook.
 
 ## What is included
 
-- `@company/ui`: reusable React primitives.
-- `@company/ui/styles.css`: brand tokens, CSS variables, and base styles.
-- `@company/ui/tailwind-preset`: the shared Tailwind theme preset.
+- `@milaha/ui`: reusable React primitives.
+- `@milaha/ui/styles.css`: brand tokens, CSS variables, and base styles.
+- `@milaha/ui/tailwind-preset`: the shared Tailwind theme preset.
 - Storybook foundations for color, typography, spacing, radius, focus, and accessibility.
 - Storybook stories for V1 UI primitives.
 - CI wiring for type checks, package build, unit tests, Storybook build, and Storybook browser tests.
@@ -51,9 +51,15 @@ npx playwright install chromium
 npm run test:storybook:run
 ```
 
+## Publishing
+
+The npm package is published as `@milaha/ui` from the `Publish Package` GitHub Actions workflow.
+
+Add an `NPM_TOKEN` repository secret with publish access to the `@milaha` npm scope, then run the workflow manually or publish a GitHub release. The workflow builds the package, runs unit checks, and publishes with npm provenance.
+
 ## Adoption rules
 
-- New reusable UI belongs in `@company/ui`.
+- New reusable UI belongs in `@milaha/ui`.
 - New reusable UI must include Storybook stories before it is accepted.
 - Use semantic tokens in app code, such as `primary`, `accent`, `text`, `background`, and `border`.
 - Existing screens can migrate gradually; V1 is a guided standard, not a forced rewrite.

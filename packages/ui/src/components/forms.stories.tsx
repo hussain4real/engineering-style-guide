@@ -21,7 +21,7 @@ export const TextFields: Story = {
   render: () => (
     <div className="grid max-w-2xl gap-5 md:grid-cols-2">
       <Input label="Full name" placeholder="Amisha" helperText="Use the name shown in the product." />
-      <Input label="Email" type="email" placeholder="name@company.com" error="Enter a valid company email." />
+      <Input label="Email" type="email" placeholder="name@milaha.com" error="Enter a valid MILAHA email." />
       <Textarea label="Notes" placeholder="Add context for the team" helperText="Keep notes short and specific." className="md:col-span-2" />
     </div>
   )
