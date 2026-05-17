@@ -4,9 +4,9 @@ This workspace implements the MILAHA engineering style guide as a shared React/N
 
 ## What is included
 
-- `@milaha/ui`: reusable React primitives.
-- `@milaha/ui/styles.css`: brand tokens, CSS variables, and base styles.
-- `@milaha/ui/tailwind-preset`: the shared Tailwind theme preset.
+- `@qatar-navigation-milaha/ui`: reusable React primitives.
+- `@qatar-navigation-milaha/ui/styles.css`: brand tokens, CSS variables, and base styles.
+- `@qatar-navigation-milaha/ui/tailwind-preset`: the shared Tailwind theme preset.
 - Storybook foundations for color, typography, spacing, radius, focus, and accessibility.
 - Storybook stories for V1 UI primitives.
 - CI wiring for type checks, package build, unit tests, Storybook build, and Storybook browser tests.
@@ -53,13 +53,13 @@ npm run test:storybook:run
 
 ## Publishing
 
-The npm package is published as `@milaha/ui` from the `Publish Package` GitHub Actions workflow.
+The npm package is published as `@qatar-navigation-milaha/ui` from the `Publish Package` GitHub Actions workflow.
 
-Add an `NPM_TOKEN` repository secret with publish access to the `@milaha` npm scope, then run the workflow manually or publish a GitHub release. The workflow builds the package, runs unit checks, and publishes with npm provenance.
+Add an `NPM_TOKEN` repository secret with publish access to the `@qatar-navigation-milaha` npm scope, then run the workflow manually or publish a GitHub release. The workflow builds the package, runs unit checks, and publishes with npm provenance.
 
 ## Adoption rules
 
-- New reusable UI belongs in `@milaha/ui`.
+- New reusable UI belongs in `@qatar-navigation-milaha/ui`.
 - New reusable UI must include Storybook stories before it is accepted.
 - Use semantic tokens in app code, such as `primary`, `accent`, `text`, `background`, and `border`.
 - Existing screens can migrate gradually; V1 is a guided standard, not a forced rewrite.

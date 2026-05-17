@@ -11,14 +11,14 @@
   ],
   "scripts": {
     "dev": "npm run storybook",
-    "storybook": "npm run storybook -w @milaha/ui",
-    "build-storybook": "npm run build-storybook -w @milaha/ui",
-    "build": "npm run build -w @milaha/ui",
-    "typecheck": "npm run typecheck -w @milaha/ui",
-    "test": "npm run test -w @milaha/ui",
-    "test:run": "npm run test:run -w @milaha/ui",
-    "test:storybook": "npm run test:storybook -w @milaha/ui",
-    "test:storybook:run": "npm run test:storybook:run -w @milaha/ui",
+    "storybook": "npm run storybook -w @qatar-navigation-milaha/ui",
+    "build-storybook": "npm run build-storybook -w @qatar-navigation-milaha/ui",
+    "build": "npm run build -w @qatar-navigation-milaha/ui",
+    "typecheck": "npm run typecheck -w @qatar-navigation-milaha/ui",
+    "test": "npm run test -w @qatar-navigation-milaha/ui",
+    "test:run": "npm run test:run -w @qatar-navigation-milaha/ui",
+    "test:storybook": "npm run test:storybook -w @qatar-navigation-milaha/ui",
+    "test:storybook:run": "npm run test:storybook:run -w @qatar-navigation-milaha/ui",
     "ci": "npm run typecheck && npm run build && npm run test:run && npm run build-storybook && npm run test:storybook:run"
   }
 }
