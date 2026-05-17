@@ -1,0 +1,26 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Foundations/Spacing, Radius, Shadows" />
+
+# Spacing, Radius, Shadows
+
+Spacing follows the Tailwind scale with a small set of predictable defaults. Prefer consistent gaps over custom pixel values.
+
+## Spacing
+
+<div className="space-y-3">
+  {[1, 2, 3, 4, 6, 8, 10, 12].map((step) => (
+    <div className="flex items-center gap-4" key={step}>
+      <div className="w-12 text-sm font-semibold text-text-muted">{step}</div>
+      <div className="h-4 rounded-sm bg-primary" style={{ width: `${step * 0.25}rem` }} />
+    </div>
+  ))}
+</div>
+
+## Radius
+
+Cards and controls use restrained radius by default: `sm`, `md`, and `lg`. Reserve fully rounded shapes for badges, toggles, and compact status elements.
+
+## Shadows
+
+Use shadows sparingly for floating surfaces such as dialogs, popovers, and toasts. Prefer borders for static cards and panels.

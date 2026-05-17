@@ -1,0 +1,35 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Engineering Guide/Contribution Rules" />
+
+# Contribution Rules
+
+This guide is a guided standard for new UI. Existing screens can migrate gradually, but new reusable UI should start here.
+
+## Component Rules
+
+- Use `@company/ui` before creating a new app-local primitive.
+- Add Storybook stories for every reusable component.
+- Export public prop types for components that app teams consume.
+- Use semantic tokens in app code instead of raw brand colors.
+- Keep `className` as a controlled escape hatch for layout and local composition.
+
+## Story Rules
+
+Each stable component should document the states that apply to it:
+
+- Default
+- Variant
+- Disabled
+- Loading
+- Error
+- Responsive behavior
+- Interaction behavior
+
+## Review Checklist
+
+- Does the component have accessible defaults?
+- Does the API match how teams will actually use it?
+- Are brand tokens used semantically?
+- Are stories useful for both engineers and reviewers?
+- Are tests covering the behavior that could regress?

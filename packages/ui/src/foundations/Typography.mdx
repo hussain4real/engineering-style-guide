@@ -1,0 +1,32 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Foundations/Typography" />
+
+# Typography
+
+`Neo Sans Pro` is the primary company typeface. The UI package exposes it as `--font-sans` and maps it to Tailwind `font-sans`.
+
+```css
+:root {
+  --font-sans: "Neo Sans Pro", Arial, sans-serif;
+}
+```
+
+Licensed web font files should be self-hosted from `packages/ui/public/fonts` when available. Until then, the CSS variable falls back to Arial and the system sans-serif stack.
+
+<div className="space-y-6">
+  <div>
+    <p className="text-sm font-semibold text-text-muted">Display</p>
+    <p className="text-3xl font-bold text-text">Build clear, reliable product interfaces.</p>
+  </div>
+  <div>
+    <p className="text-sm font-semibold text-text-muted">Heading</p>
+    <p className="text-xl font-semibold text-text">Reusable components for engineering teams</p>
+  </div>
+  <div>
+    <p className="text-sm font-semibold text-text-muted">Body</p>
+    <p className="max-w-2xl text-base leading-7 text-text">
+      Body copy should be readable, direct, and useful. Keep dense operational screens scannable, and reserve larger type for true page-level headings.
+    </p>
+  </div>
+</div>

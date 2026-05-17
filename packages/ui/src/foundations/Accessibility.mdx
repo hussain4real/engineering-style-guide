@@ -1,0 +1,29 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Foundations/Accessibility" />
+
+# Accessibility
+
+Accessibility is part of the component contract, not a late QA step.
+
+## Required Defaults
+
+- Every form control must have a visible label or an intentional accessible name.
+- Keyboard focus must be visible and use the shared focus token.
+- Error states must use text, not color alone.
+- Disabled controls must remain readable and should not be used to hide necessary context.
+- Interactive components must work with keyboard navigation.
+
+## Storybook Checks
+
+Stable stories use strict accessibility checks through the Storybook accessibility addon:
+
+```ts
+parameters: {
+  a11y: {
+    test: "error"
+  }
+}
+```
+
+Temporary exceptions must be tagged and tracked. Do not normalize `todo` accessibility states for finished components.

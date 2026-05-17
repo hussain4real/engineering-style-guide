@@ -1,0 +1,39 @@
+import { ColorItem, ColorPalette, Meta } from "@storybook/addon-docs/blocks";
+import { brandTokens, semanticTokens, surfaceTokens } from "../tokens";
+
+<Meta title="Foundations/Colors" />
+
+# Colors
+
+The palette starts with the supplied company swatches, then maps them into semantic roles for product UI.
+App code should prefer semantic tokens such as `primary`, `accent`, `text`, `background`, and `border`.
+
+## Brand Palette
+
+<ColorPalette>
+  <ColorItem title="Brand Purple" subtitle="Primary brand" colors={[brandTokens.purple.value]} />
+  <ColorItem title="Brand Orange" subtitle="Accent and focus" colors={[brandTokens.orange.value]} />
+  <ColorItem title="Brand Navy" subtitle="Text and dark surfaces" colors={[brandTokens.navy.value]} />
+  <ColorItem title="Brand Teal" subtitle="Info and secondary emphasis" colors={[brandTokens.teal.value]} />
+  <ColorItem title="Surface Mint" subtitle="Soft background" colors={[surfaceTokens.mint.value]} />
+  <ColorItem title="Surface White" subtitle="Default surface" colors={[surfaceTokens.white.value]} />
+</ColorPalette>
+
+## Semantic Roles
+
+| Role | Value | Usage |
+| --- | --- | --- |
+| `primary` | `{semanticTokens.color.primary.value}` | Main actions and selected states |
+| `accent` | `{semanticTokens.color.accent.value}` | Accent actions, focus, and active indicators |
+| `text` | `{semanticTokens.color.text.value}` | Default readable text |
+| `info` | `{semanticTokens.color.info.value}` | Informational states |
+| `background` | `{semanticTokens.color.background.value}` | Default surface |
+| `backgroundSoft` | `{semanticTokens.color.backgroundSoft.value}` | Soft sections and empty states |
+| `border` | `{semanticTokens.color.border.value}` | Dividers, inputs, and card borders |
+
+## Contrast Notes
+
+- Use white text on purple and navy.
+- Use navy text on orange, teal, mint, and white.
+- Do not place white body text on orange or teal; those combinations are not strong enough for normal text.
+- Use orange for focus rings because it remains visible against white and mint surfaces.
