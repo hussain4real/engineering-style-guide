@@ -23,7 +23,6 @@ export function Tabs({ items, value, defaultValue, onValueChange, className, ...
   const selectedValue = value ?? internalValue;
 
   const select = (nextValue: string) => {
-    if (items.find((item) => item.value === nextValue)?.disabled) return;
     if (value === undefined) {
       setInternalValue(nextValue);
     }
@@ -35,12 +34,10 @@ export function Tabs({ items, value, defaultValue, onValueChange, className, ...
     const currentIndex = enabledItems.findIndex((item) => item.value === currentValue);
     const fallbackIndex = direction === 1 ? 0 : enabledItems.length - 1;
     const nextIndex = currentIndex === -1 ? fallbackIndex : (currentIndex + direction + enabledItems.length) % enabledItems.length;
-    const nextValue = enabledItems[nextIndex]?.value;
+    const nextValue = enabledItems[nextIndex]?.value as string;
 
-    if (nextValue) {
-      select(nextValue);
-      tabRefs.current[nextValue]?.focus();
-    }
+    select(nextValue);
+    tabRefs.current[nextValue]?.focus();
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>, currentValue: string) => {
@@ -56,20 +53,16 @@ export function Tabs({ items, value, defaultValue, onValueChange, className, ...
 
     if (event.key === "Home") {
       event.preventDefault();
-      const firstValue = items.find((item) => !item.disabled)?.value;
-      if (firstValue) {
-        select(firstValue);
-        tabRefs.current[firstValue]?.focus();
-      }
+      const firstValue = items.find((item) => !item.disabled)?.value as string;
+      select(firstValue);
+      tabRefs.current[firstValue]?.focus();
     }
 
     if (event.key === "End") {
       event.preventDefault();
-      const lastValue = [...items].reverse().find((item) => !item.disabled)?.value;
-      if (lastValue) {
-        select(lastValue);
-        tabRefs.current[lastValue]?.focus();
-      }
+      const lastValue = [...items].reverse().find((item) => !item.disabled)?.value as string;
+      select(lastValue);
+      tabRefs.current[lastValue]?.focus();
     }
   };
 

@@ -54,3 +54,11 @@ export const Responsive: Story = {
     </Alert>
   )
 };
+
+export const WithoutTitle: Story = {
+  render: () => <Alert>Inline guidance can also be presented without a separate heading.</Alert>,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByRole("status")).toHaveTextContent("Inline guidance");
+  }
+};

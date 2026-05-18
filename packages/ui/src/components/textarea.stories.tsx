@@ -44,3 +44,11 @@ export const States: Story = {
 export const Responsive: Story = {
   render: () => <Textarea label="Review notes" className="min-h-32" helperText="The field spans the available width." />
 };
+
+export const AccessibleNameOnly: Story = {
+  render: () => <Textarea aria-label="Implementation notes" placeholder="Add notes" />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByRole("textbox", { name: "Implementation notes" })).toBeInTheDocument();
+  }
+};

@@ -16,8 +16,7 @@ export function Dialog({ open, title, description, footer, onOpenChange, classNa
   const { "aria-labelledby": ariaLabelledBy, "aria-describedby": ariaDescribedBy, ...dialogProps } = props;
 
   useEffect(() => {
-    const dialog = ref.current;
-    if (!dialog) return;
+    const dialog = ref.current as HTMLDialogElement;
 
     if (open && !dialog.open) {
       if (typeof dialog.showModal === "function") {

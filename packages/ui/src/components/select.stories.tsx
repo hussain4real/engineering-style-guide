@@ -59,3 +59,16 @@ export const Responsive: Story = {
     </div>
   )
 };
+
+export const HelperAndAccessibleName: Story = {
+  render: () => (
+    <Select aria-label="Team" helperText="Choose the owning team." defaultValue="frontend">
+      <option value="frontend">Frontend</option>
+      <option value="platform">Platform</option>
+    </Select>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByRole("combobox", { name: "Team" })).toHaveAccessibleDescription("Choose the owning team.");
+  }
+};

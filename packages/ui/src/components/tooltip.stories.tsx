@@ -63,3 +63,11 @@ export const Responsive: Story = {
     </div>
   )
 };
+
+export const TextTrigger: Story = {
+  render: () => <Tooltip content="Plain text triggers receive focus support.">Plain text trigger</Tooltip>,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByText("Plain text trigger")).toHaveAccessibleDescription("Plain text triggers receive focus support.");
+  }
+};

@@ -23,7 +23,6 @@ export function Switch({
   const accessibleName = ariaLabel ?? label;
 
   const toggle = () => {
-    if (disabled) return;
     const next = !isChecked;
     setInternalChecked(next);
     onCheckedChange?.(next);

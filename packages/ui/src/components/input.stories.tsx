@@ -49,3 +49,11 @@ export const Responsive: Story = {
     </div>
   )
 };
+
+export const AccessibleNameOnly: Story = {
+  render: () => <Input aria-label="Search components" placeholder="Search" />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByRole("textbox", { name: "Search components" })).toBeInTheDocument();
+  }
+};

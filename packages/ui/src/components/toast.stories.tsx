@@ -54,3 +54,11 @@ export const Responsive: Story = {
     </div>
   )
 };
+
+export const TitleOnly: Story = {
+  render: () => <Toast title="Deployment queued" />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByRole("status")).toHaveTextContent("Deployment queued");
+  }
+};
