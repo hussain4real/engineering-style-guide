@@ -28,10 +28,19 @@ The initial palette is sampled from the supplied brand swatches:
 
 ## Local development
 
+Use the project Node version before starting Storybook:
+
+```bash
+nvm install
+nvm use
+```
+
 ```bash
 pnpm install
 pnpm run storybook
 ```
+
+The root scripts also try to load `.nvmrc` automatically when VS Code tasks inherit an older global Node version.
 
 ## Quality checks
 

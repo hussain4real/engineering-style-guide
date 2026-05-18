@@ -10,15 +10,15 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "pnpm run storybook",
-    "storybook": "pnpm --filter @qatar-navigation-milaha/ui run storybook",
-    "build-storybook": "pnpm --filter @qatar-navigation-milaha/ui run build-storybook",
-    "build": "pnpm --filter @qatar-navigation-milaha/ui run build",
-    "typecheck": "pnpm --filter @qatar-navigation-milaha/ui run typecheck",
-    "test": "pnpm --filter @qatar-navigation-milaha/ui run test",
-    "test:run": "pnpm --filter @qatar-navigation-milaha/ui run test:run",
-    "test:storybook": "pnpm --filter @qatar-navigation-milaha/ui run test:storybook",
-    "test:storybook:run": "pnpm --filter @qatar-navigation-milaha/ui run test:storybook:run",
-    "ci": "pnpm run typecheck && pnpm run build && pnpm run test:run && pnpm run build-storybook && pnpm run test:storybook:run"
+    "dev": "bash scripts/with-project-node.sh pnpm --filter @qatar-navigation-milaha/ui run storybook",
+    "storybook": "bash scripts/with-project-node.sh pnpm --filter @qatar-navigation-milaha/ui run storybook",
+    "build-storybook": "bash scripts/with-project-node.sh pnpm --filter @qatar-navigation-milaha/ui run build-storybook",
+    "build": "bash scripts/with-project-node.sh pnpm --filter @qatar-navigation-milaha/ui run build",
+    "typecheck": "bash scripts/with-project-node.sh pnpm --filter @qatar-navigation-milaha/ui run typecheck",
+    "test": "bash scripts/with-project-node.sh pnpm --filter @qatar-navigation-milaha/ui run test",
+    "test:run": "bash scripts/with-project-node.sh pnpm --filter @qatar-navigation-milaha/ui run test:run",
+    "test:storybook": "bash scripts/with-project-node.sh pnpm --filter @qatar-navigation-milaha/ui run test:storybook",
+    "test:storybook:run": "bash scripts/with-project-node.sh pnpm --filter @qatar-navigation-milaha/ui run test:storybook:run",
+    "ci": "bash scripts/with-project-node.sh pnpm run typecheck && pnpm run build && pnpm run test:run && pnpm run build-storybook && pnpm run test:storybook:run"
   }
 }
