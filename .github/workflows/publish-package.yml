@@ -9,6 +9,12 @@ on:
 permissions:
   contents: read
   id-token: write
+  packages: write
+
+env:
+  PACKAGE_DIR: packages/ui
+  PACKAGE_NAME: "@qatar-navigation-milaha/ui"
+  PACKAGE_SCOPE: "@qatar-navigation-milaha"
 
 jobs:
   publish:
@@ -30,6 +36,10 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Read package version
+        run: |
+          node -e 'const pkg = require("./packages/ui/package.json"); console.log(`PACKAGE_VERSION=${pkg.version}`)' >> "$GITHUB_ENV"
+
       - name: Typecheck
         run: pnpm run typecheck
 
@@ -39,7 +49,66 @@ jobs:
       - name: Unit tests
         run: pnpm run test:run
 
+      - name: Check npm registry version
+        id: npm-version
+        run: |
+          set +e
+          npm view "$PACKAGE_NAME@$PACKAGE_VERSION" version --registry=https://registry.npmjs.org >/tmp/npm-package-version 2>/tmp/npm-package-error
+          status=$?
+          set -e
+
+          if [ "$status" -eq 0 ]; then
+            echo "published=true" >> "$GITHUB_OUTPUT"
+            echo "$PACKAGE_NAME@$PACKAGE_VERSION is already published on npmjs."
+          elif grep -Eq "(E404|404 Not Found)" /tmp/npm-package-error; then
+            echo "published=false" >> "$GITHUB_OUTPUT"
+          else
+            cat /tmp/npm-package-error
+            exit "$status"
+          fi
+
       - name: Publish to npm
+        if: steps.npm-version.outputs.published == 'false'
         run: pnpm --filter @qatar-navigation-milaha/ui publish --access public --provenance --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Setup Node for GitHub Packages
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          registry-url: https://npm.pkg.github.com
+          scope: ${{ env.PACKAGE_SCOPE }}
+
+      - name: Check GitHub Packages version
+        id: github-version
+        run: |
+          set +e
+          npm view "$PACKAGE_NAME@$PACKAGE_VERSION" version --registry=https://npm.pkg.github.com >/tmp/github-package-version 2>/tmp/github-package-error
+          status=$?
+          set -e
+
+          if [ "$status" -eq 0 ]; then
+            echo "published=true" >> "$GITHUB_OUTPUT"
+            echo "$PACKAGE_NAME@$PACKAGE_VERSION is already published on GitHub Packages."
+          elif grep -Eq "(E404|404 Not Found)" /tmp/github-package-error; then
+            echo "published=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "::error::Unable to query GitHub Packages. If this repository remains under hussain4real while the package scope is @qatar-navigation-milaha, add a GH_PACKAGES_TOKEN secret with read:packages and write:packages access to the Qatar-Navigation-Milaha org."
+            cat /tmp/github-package-error
+            exit "$status"
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: Prepare GitHub Packages metadata
+        if: steps.github-version.outputs.published == 'false'
+        run: |
+          npm pkg set publishConfig.registry=https://npm.pkg.github.com --prefix "$PACKAGE_DIR"
+          npm pkg delete repository --prefix "$PACKAGE_DIR"
+
+      - name: Publish to GitHub Packages
+        if: steps.github-version.outputs.published == 'false'
+        run: pnpm --filter @qatar-navigation-milaha/ui publish --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN || secrets.GITHUB_TOKEN }}

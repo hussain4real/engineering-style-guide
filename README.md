@@ -60,9 +60,23 @@ pnpm run test:storybook:run
 
 ## Publishing
 
-The npm package is published as `@qatar-navigation-milaha/ui` from the `Publish Package` GitHub Actions workflow.
+The package is published as `@qatar-navigation-milaha/ui` from the `Publish Package` GitHub Actions workflow.
 
-Add an `NPM_TOKEN` repository secret with publish access to the `@qatar-navigation-milaha` npm scope, then run the workflow manually or publish a GitHub release. The workflow builds the package, runs unit checks, and publishes with npm provenance.
+The workflow builds the package, runs unit checks, and publishes to:
+
+- npmjs: `https://www.npmjs.com/package/@qatar-navigation-milaha/ui`
+- GitHub Packages: `https://github.com/orgs/Qatar-Navigation-Milaha/packages/npm/package/ui`
+
+Add an `NPM_TOKEN` repository secret with publish access to the `@qatar-navigation-milaha` npm scope. To publish the org-scoped package to GitHub Packages while this source repository remains under `hussain4real`, add a `GH_PACKAGES_TOKEN` repository secret from a classic GitHub token with `read:packages` and `write:packages` access authorized for the `Qatar-Navigation-Milaha` organization. If the source repository is later moved into the organization, the workflow can use the repository `GITHUB_TOKEN`.
+
+The publish workflow checks both registries first and skips any package version that is already present, so rerunning a release is safe.
+
+To install from GitHub Packages, configure the consuming project or CI environment with the scoped registry:
+
+```ini
+@qatar-navigation-milaha:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=${GITHUB_PACKAGES_TOKEN}
+```
 
 ## Adoption rules
 
