@@ -19,6 +19,7 @@
     "test:run": "bash scripts/with-project-node.sh pnpm --filter @qatar-navigation-milaha/ui run test:run",
     "test:storybook": "bash scripts/with-project-node.sh pnpm --filter @qatar-navigation-milaha/ui run test:storybook",
     "test:storybook:run": "bash scripts/with-project-node.sh pnpm --filter @qatar-navigation-milaha/ui run test:storybook:run",
+    "test:storybook:coverage": "bash scripts/with-project-node.sh pnpm --filter @qatar-navigation-milaha/ui run test:storybook:coverage",
     "ci": "bash scripts/with-project-node.sh pnpm run typecheck && pnpm run build && pnpm run test:run && pnpm run build-storybook && pnpm run test:storybook:run"
   }
 }

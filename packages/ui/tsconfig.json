@@ -7,7 +7,6 @@
   "include": [
     "src",
     ".storybook",
-    "*.config.ts",
-    "vitest.storybook.config.ts"
+    "*.config.ts"
   ]
 }

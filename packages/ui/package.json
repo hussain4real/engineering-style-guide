@@ -46,10 +46,11 @@
     "build-storybook": "storybook build",
     "build": "tsup && cp src/styles.css dist/styles.css",
     "typecheck": "tsc --noEmit",
-    "test": "vitest --config vitest.config.ts",
-    "test:run": "vitest --config vitest.config.ts --run",
-    "test:storybook": "vitest --config vitest.storybook.config.ts --project=storybook",
-    "test:storybook:run": "vitest --config vitest.storybook.config.ts --project=storybook --run"
+    "test": "vitest --config vitest.config.ts --project=unit",
+    "test:run": "vitest --config vitest.config.ts --project=unit --run",
+    "test:storybook": "vitest --config vitest.config.ts --project=storybook",
+    "test:storybook:run": "vitest --config vitest.config.ts --project=storybook --run",
+    "test:storybook:coverage": "vitest --config vitest.config.ts --project=storybook --run --coverage"
   },
   "peerDependencies": {
     "next": ">=14.1.0",
@@ -69,6 +70,7 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",
     "@vitest/browser-playwright": "^4.0.8",
+    "@vitest/coverage-v8": "^4.1.6",
     "autoprefixer": "^10.4.22",
     "jsdom": "^27.2.0",
     "next": "^16.0.4",
