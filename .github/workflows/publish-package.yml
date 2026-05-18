@@ -80,6 +80,21 @@ jobs:
           registry-url: https://npm.pkg.github.com
           scope: ${{ env.PACKAGE_SCOPE }}
 
+      - name: Validate GitHub Packages credentials
+        run: |
+          if [ -n "$GH_PACKAGES_TOKEN" ]; then
+            exit 0
+          fi
+
+          if [ "$GITHUB_REPOSITORY_OWNER" = "Qatar-Navigation-Milaha" ]; then
+            exit 0
+          fi
+
+          echo "::error::Add a GH_PACKAGES_TOKEN repository secret from a classic GitHub token with read:packages and write:packages access authorized for the Qatar-Navigation-Milaha org, or move this repository into that org so GITHUB_TOKEN can publish the org-scoped package."
+          exit 1
+        env:
+          GH_PACKAGES_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN }}
+
       - name: Check GitHub Packages version
         id: github-version
         run: |
