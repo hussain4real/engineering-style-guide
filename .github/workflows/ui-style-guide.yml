@@ -45,7 +45,7 @@ jobs:
         run: pnpm run build-storybook
 
       - name: Install browser dependencies
-        run: pnpm exec playwright install --with-deps chromium
+        run: pnpm --filter @qatar-navigation-milaha/ui exec playwright install --with-deps chromium
 
       - name: Storybook component and accessibility tests
         run: pnpm run test:storybook:run
