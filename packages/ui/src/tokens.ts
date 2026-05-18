@@ -164,7 +164,7 @@ export const shadowTokens = {
 } as const;
 
 export const typographyTokens = {
-  fontSans: "\"Neo Sans Pro\", Arial, sans-serif",
+  fontSans: "\"Neo Sans Pro\", \"Poppins\", Arial, sans-serif",
   sizes: {
     xs: "0.75rem",
     sm: "0.875rem",
@@ -194,4 +194,96 @@ export const spacingTokens = {
   10: "2.5rem",
   12: "3rem",
   16: "4rem"
+} as const;
+
+export const stateTokens = {
+  default: {
+    usage: "Resting interactive and display state.",
+    background: "rgb(var(--color-background))",
+    foreground: "rgb(var(--color-text))",
+    border: "rgb(var(--color-border))"
+  },
+  hover: {
+    usage: "Pointer hover for enabled controls.",
+    background: "rgb(var(--color-background-soft))",
+    foreground: "rgb(var(--color-text))"
+  },
+  active: {
+    usage: "Pressed, selected, or current navigation state.",
+    background: "rgb(var(--color-primary))",
+    foreground: "rgb(var(--color-primary-foreground))"
+  },
+  disabled: {
+    usage: "Unavailable controls that remain visible and readable.",
+    opacity: "0.55",
+    background: "rgb(var(--color-background-soft))",
+    foreground: "rgb(var(--color-muted))"
+  },
+  loading: {
+    usage: "Pending action feedback for controls and page fragments.",
+    indicator: "currentColor",
+    aria: "Use aria-busy or role=status with a clear label."
+  },
+  focus: {
+    usage: "Keyboard focus affordance.",
+    outline: "2px solid rgb(var(--color-focus))",
+    outlineOffset: "2px",
+    ring: shadowTokens.focus
+  },
+  error: {
+    usage: "Validation or destructive failure state.",
+    color: "rgb(var(--color-danger))",
+    foreground: "rgb(var(--color-danger-foreground))"
+  },
+  success: {
+    usage: "Completed or positive status.",
+    color: "rgb(var(--color-success))",
+    foreground: "rgb(var(--color-success-foreground))"
+  },
+  warning: {
+    usage: "Risk, reversible caution, or review-needed status.",
+    color: "rgb(var(--color-warning))",
+    foreground: "rgb(var(--color-warning-foreground))"
+  }
+} as const;
+
+export const componentTokens = {
+  control: {
+    radius: radiusTokens.md,
+    fontWeight: typographyTokens.weights.semibold,
+    focusRing: "focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2",
+    heights: {
+      sm: "2rem",
+      md: "2.5rem",
+      lg: "3rem"
+    }
+  },
+  field: {
+    radius: radiusTokens.md,
+    border: "rgb(var(--color-border))",
+    background: "rgb(var(--color-background))",
+    errorBorder: "rgb(var(--color-danger))",
+    helperText: "rgb(var(--color-muted))"
+  },
+  feedback: {
+    radius: radiusTokens.lg,
+    tones: {
+      info: semanticTokens.color.info.value,
+      success: semanticTokens.color.success.value,
+      warning: semanticTokens.color.warning.value,
+      danger: semanticTokens.color.danger.value
+    }
+  },
+  navigation: {
+    tabRadius: radiusTokens.md,
+    selectedBackground: "rgb(var(--color-primary))",
+    selectedForeground: "rgb(var(--color-primary-foreground))",
+    inactiveForeground: "rgb(var(--color-muted))"
+  },
+  overlay: {
+    radius: radiusTokens.lg,
+    maxWidth: "34rem",
+    backdrop: "rgb(var(--color-text) / 0.4)",
+    shadow: shadowTokens.md
+  }
 } as const;

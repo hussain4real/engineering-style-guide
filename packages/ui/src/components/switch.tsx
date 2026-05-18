@@ -8,9 +8,19 @@ export interface SwitchProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonE
   onCheckedChange?: (checked: boolean) => void;
 }
 
-export function Switch({ checked, defaultChecked = false, label, onCheckedChange, className, disabled, ...props }: SwitchProps) {
+export function Switch({
+  checked,
+  defaultChecked = false,
+  label,
+  onCheckedChange,
+  className,
+  disabled,
+  "aria-label": ariaLabel,
+  ...props
+}: SwitchProps) {
   const [internalChecked, setInternalChecked] = useState(defaultChecked);
   const isChecked = checked ?? internalChecked;
+  const accessibleName = ariaLabel ?? label;
 
   const toggle = () => {
     if (disabled) return;
@@ -24,7 +34,7 @@ export function Switch({ checked, defaultChecked = false, label, onCheckedChange
       type="button"
       role="switch"
       aria-checked={isChecked}
-      aria-label={label}
+      aria-label={accessibleName}
       disabled={disabled}
       onClick={toggle}
       className={cn(

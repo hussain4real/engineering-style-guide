@@ -17,7 +17,7 @@ export default mergeConfig(
           plugins: [
             storybookTest({
               configDir: path.join(dirname, ".storybook"),
-              storybookScript: "npm run storybook -- --no-open",
+              storybookScript: "pnpm run storybook -- --no-open",
               tags: {
                 include: ["test"],
                 exclude: ["experimental"]

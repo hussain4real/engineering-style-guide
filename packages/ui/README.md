@@ -31,3 +31,7 @@ export default {
 ```
 
 Prefer semantic classes like `bg-primary`, `text-text`, `border-border`, and `bg-background-soft` in app code.
+
+## Font
+
+`Neo Sans Pro` remains the primary brand face. The package loads Poppins as the interim fallback through `styles.css` until licensed Neo Sans Pro web files are available.

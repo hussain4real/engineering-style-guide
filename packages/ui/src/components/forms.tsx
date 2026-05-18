@@ -130,6 +130,7 @@ export interface CheckboxProps extends Omit<React.InputHTMLAttributes<HTMLInputE
 export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(({ label, helperText, error, id, className, ...props }, ref) => {
   const generatedId = useId();
   const checkboxId = id ?? generatedId;
+  const describedBy = error ? `${checkboxId}-error` : helperText ? `${checkboxId}-helper` : undefined;
 
   return (
     <div className="space-y-1">
@@ -144,6 +145,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(({ label, he
             className
           )}
           aria-invalid={error ? true : undefined}
+          aria-describedby={describedBy}
           {...props}
         />
         <label htmlFor={checkboxId} className="text-sm font-medium leading-6 text-text">
@@ -159,24 +161,36 @@ Checkbox.displayName = "Checkbox";
 
 export interface RadioProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "type"> {
   label: string;
+  helperText?: string;
+  error?: string;
 }
 
-export const Radio = forwardRef<HTMLInputElement, RadioProps>(({ label, id, className, ...props }, ref) => {
+export const Radio = forwardRef<HTMLInputElement, RadioProps>(({ label, helperText, error, id, className, ...props }, ref) => {
   const generatedId = useId();
   const radioId = id ?? generatedId;
+  const describedBy = error ? `${radioId}-error` : helperText ? `${radioId}-helper` : undefined;
 
   return (
-    <div className="flex items-center gap-2">
-      <input
-        ref={ref}
-        id={radioId}
-        type="radio"
-        className={cn("h-4 w-4 border-border text-primary focus:ring-2 focus:ring-focus/35", className)}
-        {...props}
-      />
-      <label htmlFor={radioId} className="text-sm font-medium text-text">
-        {label}
-      </label>
+    <div className="space-y-1">
+      <div className="flex items-center gap-2">
+        <input
+          ref={ref}
+          id={radioId}
+          type="radio"
+          className={cn(
+            "h-4 w-4 border-border text-primary focus:ring-2 focus:ring-focus/35",
+            "disabled:cursor-not-allowed disabled:opacity-55",
+            className
+          )}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={describedBy}
+          {...props}
+        />
+        <label htmlFor={radioId} className="text-sm font-medium text-text">
+          {label}
+        </label>
+      </div>
+      <FieldNotes id={radioId} helperText={helperText} error={error} />
     </div>
   );
 });

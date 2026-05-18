@@ -26,7 +26,13 @@ const preview: Preview = {
     },
     options: {
       storySort: {
-        order: ["Foundations", "Components", "Engineering Guide"]
+        order: [
+          "Foundations",
+          ["Colors", "Typography", "Spacing, Radius, Shadows", "Accessibility"],
+          "Components",
+          ["Actions", "Forms", "Feedback", "Layout", "Navigation", "Overlays"],
+          "Engineering Guide"
+        ]
       }
     }
   },

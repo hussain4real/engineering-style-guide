@@ -17,26 +17,29 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Setup Node
         uses: actions/setup-node@v6
         with:
           node-version: 22
-          cache: npm
+          cache: pnpm
           registry-url: https://registry.npmjs.org
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Typecheck
-        run: npm run typecheck
+        run: pnpm run typecheck
 
       - name: Build package
-        run: npm run build
+        run: pnpm run build
 
       - name: Unit tests
-        run: npm run test:run
+        run: pnpm run test:run
 
       - name: Publish to npm
-        run: npm publish -w @qatar-navigation-milaha/ui --access public --provenance
+        run: pnpm --filter @qatar-navigation-milaha/ui publish --access public --provenance --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

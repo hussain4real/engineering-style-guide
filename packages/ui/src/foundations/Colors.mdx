@@ -1,5 +1,5 @@
 import { ColorItem, ColorPalette, Meta } from "@storybook/addon-docs/blocks";
-import { brandTokens, semanticTokens, surfaceTokens } from "../tokens";
+import { brandTokens, componentTokens, semanticTokens, stateTokens, surfaceTokens } from "../tokens";
 
 <Meta title="Foundations/Colors" />
 
@@ -37,3 +37,27 @@ App code should prefer semantic tokens such as `primary`, `accent`, `text`, `bac
 - Use navy text on orange, teal, mint, and white.
 - Do not place white body text on orange or teal; those combinations are not strong enough for normal text.
 - Use orange for focus rings because it remains visible against white and mint surfaces.
+
+## State Tokens
+
+| State | Usage |
+| --- | --- |
+| `default` | `{stateTokens.default.usage}` |
+| `hover` | `{stateTokens.hover.usage}` |
+| `active` | `{stateTokens.active.usage}` |
+| `disabled` | `{stateTokens.disabled.usage}` |
+| `loading` | `{stateTokens.loading.usage}` |
+| `focus` | `{stateTokens.focus.usage}` |
+| `error` | `{stateTokens.error.usage}` |
+| `success` | `{stateTokens.success.usage}` |
+| `warning` | `{stateTokens.warning.usage}` |
+
+## Component Tokens
+
+| Group | Decision |
+| --- | --- |
+| `control` | Radius `{componentTokens.control.radius}`, shared focus ring, and fixed control heights. |
+| `field` | Shared input border, background, helper text, and error border tokens. |
+| `feedback` | Tone mapping for info, success, warning, and danger feedback. |
+| `navigation` | Selected and inactive tab colors. |
+| `overlay` | Dialog radius, max width, backdrop, and shadow. |

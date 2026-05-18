@@ -24,31 +24,29 @@ The initial palette is sampled from the supplied brand swatches:
 | `surface.mint` | `#EAF7F4` | Soft background |
 | `surface.white` | `#FFFFFF` | Default surface |
 
-`Neo Sans Pro` is the primary brand font. Add licensed `.woff2` files under `packages/ui/public/fonts` and then enable the `@font-face` rule in `packages/ui/src/styles.css`.
+`Neo Sans Pro` is the primary brand font. The package loads Poppins as the interim fallback until licensed Neo Sans Pro `.woff2` files are available.
 
 ## Local development
 
 ```bash
-npm install
-npm run storybook
+pnpm install
+pnpm run storybook
 ```
-
-The project is pnpm-workspace compatible, but npm workspaces are also supported for local verification.
 
 ## Quality checks
 
 ```bash
-npm run typecheck
-npm run build
-npm run test:run
-npm run build-storybook
+pnpm run typecheck
+pnpm run build
+pnpm run test:run
+pnpm run build-storybook
 ```
 
 For Storybook browser tests, install Playwright browsers first:
 
 ```bash
-npx playwright install chromium
-npm run test:storybook:run
+pnpm exec playwright install chromium
+pnpm run test:storybook:run
 ```
 
 ## Publishing

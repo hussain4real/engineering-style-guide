@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useId, useRef } from "react";
 import { cn } from "../lib/cn";
 
 export interface DialogProps extends Omit<React.DialogHTMLAttributes<HTMLDialogElement>, "title"> {
@@ -11,6 +11,9 @@ export interface DialogProps extends Omit<React.DialogHTMLAttributes<HTMLDialogE
 
 export function Dialog({ open, title, description, footer, onOpenChange, className, children, ...props }: DialogProps) {
   const ref = useRef<HTMLDialogElement>(null);
+  const titleId = useId();
+  const descriptionId = useId();
+  const { "aria-labelledby": ariaLabelledBy, "aria-describedby": ariaDescribedBy, ...dialogProps } = props;
 
   useEffect(() => {
     const dialog = ref.current;
@@ -36,6 +39,9 @@ export function Dialog({ open, title, description, footer, onOpenChange, classNa
         "w-[min(92vw,34rem)] rounded-lg border border-border bg-background p-0 text-text shadow-md backdrop:bg-text/40",
         className
       )}
+      aria-modal="true"
+      aria-labelledby={ariaLabelledBy ?? titleId}
+      aria-describedby={ariaDescribedBy ?? (description ? descriptionId : undefined)}
       onCancel={(event) => {
         event.preventDefault();
         onOpenChange?.(false);
@@ -46,13 +52,19 @@ export function Dialog({ open, title, description, footer, onOpenChange, classNa
           onOpenChange?.(false);
         }
       }}
-      {...props}
+      {...dialogProps}
     >
       <div className="space-y-4 p-6">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h2 className="text-xl font-semibold text-text">{title}</h2>
-            {description ? <p className="mt-1 text-sm leading-6 text-text-muted">{description}</p> : null}
+            <h2 id={titleId} className="text-xl font-semibold text-text">
+              {title}
+            </h2>
+            {description ? (
+              <p id={descriptionId} className="mt-1 text-sm leading-6 text-text-muted">
+                {description}
+              </p>
+            ) : null}
           </div>
           <button
             type="button"

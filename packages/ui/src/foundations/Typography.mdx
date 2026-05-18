@@ -5,10 +5,11 @@ import { Meta } from "@storybook/addon-docs/blocks";
 # Typography
 
 `Neo Sans Pro` is the primary company typeface. The UI package exposes it as `--font-sans` and maps it to Tailwind `font-sans`.
+Until licensed Neo Sans Pro web files are available, the package loads Poppins as the interim fallback.
 
 ```css
 :root {
-  --font-sans: "Neo Sans Pro", Arial, sans-serif;
+  --font-sans: "Neo Sans Pro", "Poppins", Arial, sans-serif;
 }
 ```
 

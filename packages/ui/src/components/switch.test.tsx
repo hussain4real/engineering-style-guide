@@ -17,4 +17,10 @@ describe("Switch", () => {
     expect(control).toHaveAttribute("aria-checked", "true");
     expect(onCheckedChange).toHaveBeenCalledWith(true);
   });
+
+  it("supports aria-label when no visible label prop is supplied", () => {
+    render(<Switch aria-label="Enable digest" />);
+
+    expect(screen.getByRole("switch", { name: "Enable digest" })).toBeInTheDocument();
+  });
 });

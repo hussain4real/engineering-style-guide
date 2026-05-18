@@ -1,4 +1,4 @@
-import { useId } from "react";
+import { cloneElement, isValidElement, useId, type ReactElement } from "react";
 import { cn } from "../lib/cn";
 
 export interface TooltipProps {
@@ -15,12 +15,22 @@ const sideClasses = {
 
 export function Tooltip({ content, children, side = "top", className }: TooltipProps) {
   const id = useId();
+  let trigger = (
+    <span tabIndex={0} aria-describedby={id} className="inline-flex focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+      {children}
+    </span>
+  );
+
+  if (isValidElement(children)) {
+    const child = children as ReactElement<{ "aria-describedby"?: string }>;
+    trigger = cloneElement(child, {
+      "aria-describedby": [child.props["aria-describedby"], id].filter(Boolean).join(" ")
+    });
+  }
 
   return (
     <span className={cn("group relative inline-flex", className)}>
-      <span tabIndex={0} aria-describedby={id} className="inline-flex focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
-        {children}
-      </span>
+      {trigger}
       <span
         id={id}
         role="tooltip"

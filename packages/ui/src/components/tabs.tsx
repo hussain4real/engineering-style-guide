@@ -1,4 +1,4 @@
-import { useId, useState } from "react";
+import { useId, useRef, useState } from "react";
 import { cn } from "../lib/cn";
 
 export interface TabItem {
@@ -17,29 +17,80 @@ export interface TabsProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export function Tabs({ items, value, defaultValue, onValueChange, className, ...props }: TabsProps) {
   const baseId = useId();
+  const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const firstEnabled = items.find((item) => !item.disabled)?.value ?? items[0]?.value;
   const [internalValue, setInternalValue] = useState(defaultValue ?? firstEnabled);
   const selectedValue = value ?? internalValue;
 
   const select = (nextValue: string) => {
-    setInternalValue(nextValue);
+    if (items.find((item) => item.value === nextValue)?.disabled) return;
+    if (value === undefined) {
+      setInternalValue(nextValue);
+    }
     onValueChange?.(nextValue);
+  };
+
+  const moveToTab = (currentValue: string, direction: 1 | -1) => {
+    const enabledItems = items.filter((item) => !item.disabled);
+    const currentIndex = enabledItems.findIndex((item) => item.value === currentValue);
+    const fallbackIndex = direction === 1 ? 0 : enabledItems.length - 1;
+    const nextIndex = currentIndex === -1 ? fallbackIndex : (currentIndex + direction + enabledItems.length) % enabledItems.length;
+    const nextValue = enabledItems[nextIndex]?.value;
+
+    if (nextValue) {
+      select(nextValue);
+      tabRefs.current[nextValue]?.focus();
+    }
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>, currentValue: string) => {
+    if (event.key === "ArrowRight") {
+      event.preventDefault();
+      moveToTab(currentValue, 1);
+    }
+
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      moveToTab(currentValue, -1);
+    }
+
+    if (event.key === "Home") {
+      event.preventDefault();
+      const firstValue = items.find((item) => !item.disabled)?.value;
+      if (firstValue) {
+        select(firstValue);
+        tabRefs.current[firstValue]?.focus();
+      }
+    }
+
+    if (event.key === "End") {
+      event.preventDefault();
+      const lastValue = [...items].reverse().find((item) => !item.disabled)?.value;
+      if (lastValue) {
+        select(lastValue);
+        tabRefs.current[lastValue]?.focus();
+      }
+    }
   };
 
   return (
     <div className={cn("space-y-4", className)} {...props}>
-      <div role="tablist" className="inline-flex rounded-lg border border-border bg-background p-1">
+      <div role="tablist" aria-orientation="horizontal" className="inline-flex rounded-lg border border-border bg-background p-1">
         {items.map((item) => {
           const selected = item.value === selectedValue;
           return (
             <button
               key={item.value}
+              ref={(node) => {
+                tabRefs.current[item.value] = node;
+              }}
               type="button"
               role="tab"
               id={`${baseId}-tab-${item.value}`}
               aria-selected={selected}
               aria-controls={`${baseId}-panel-${item.value}`}
               disabled={item.disabled}
+              tabIndex={selected ? 0 : -1}
               className={cn(
                 "rounded-md px-3 py-2 text-sm font-semibold transition-colors",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus",
@@ -47,6 +98,7 @@ export function Tabs({ items, value, defaultValue, onValueChange, className, ...
                 item.disabled && "cursor-not-allowed opacity-50"
               )}
               onClick={() => select(item.value)}
+              onKeyDown={(event) => handleKeyDown(event, item.value)}
             >
               {item.label}
             </button>

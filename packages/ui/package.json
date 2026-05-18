@@ -1,6 +1,6 @@
 {
   "name": "@qatar-navigation-milaha/ui",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "MILAHA engineering style guide UI primitives, brand tokens, and Tailwind preset.",
   "license": "UNLICENSED",
   "type": "module",
@@ -20,6 +20,7 @@
   "files": [
     "dist",
     "src/styles.css",
+    "CHANGELOG.md",
     "README.md"
   ],
   "main": "./dist/index.js",

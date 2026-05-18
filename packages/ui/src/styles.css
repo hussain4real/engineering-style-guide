@@ -1,5 +1,7 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
+
 :root {
-  --font-sans: "Neo Sans Pro", Arial, sans-serif;
+  --font-sans: "Neo Sans Pro", "Poppins", Arial, sans-serif;
 
   --brand-purple: #5e108b;
   --brand-orange: #ff4b00;
@@ -39,8 +41,9 @@
 }
 
 /*
-  When licensed Neo Sans Pro web fonts are available, place them in
-  packages/ui/public/fonts and enable a rule like this:
+  Poppins is loaded as the interim fallback above. When licensed Neo Sans Pro
+  web fonts are available, place them in packages/ui/public/fonts and enable
+  a rule like this:
 
   @font-face {
     font-family: "Neo Sans Pro";

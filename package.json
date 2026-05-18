@@ -1,6 +1,6 @@
 {
   "name": "engineering-style-guide",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "packageManager": "pnpm@10.11.0",
   "engines": {
@@ -10,15 +10,15 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "npm run storybook",
-    "storybook": "npm run storybook -w @qatar-navigation-milaha/ui",
-    "build-storybook": "npm run build-storybook -w @qatar-navigation-milaha/ui",
-    "build": "npm run build -w @qatar-navigation-milaha/ui",
-    "typecheck": "npm run typecheck -w @qatar-navigation-milaha/ui",
-    "test": "npm run test -w @qatar-navigation-milaha/ui",
-    "test:run": "npm run test:run -w @qatar-navigation-milaha/ui",
-    "test:storybook": "npm run test:storybook -w @qatar-navigation-milaha/ui",
-    "test:storybook:run": "npm run test:storybook:run -w @qatar-navigation-milaha/ui",
-    "ci": "npm run typecheck && npm run build && npm run test:run && npm run build-storybook && npm run test:storybook:run"
+    "dev": "pnpm run storybook",
+    "storybook": "pnpm --filter @qatar-navigation-milaha/ui run storybook",
+    "build-storybook": "pnpm --filter @qatar-navigation-milaha/ui run build-storybook",
+    "build": "pnpm --filter @qatar-navigation-milaha/ui run build",
+    "typecheck": "pnpm --filter @qatar-navigation-milaha/ui run typecheck",
+    "test": "pnpm --filter @qatar-navigation-milaha/ui run test",
+    "test:run": "pnpm --filter @qatar-navigation-milaha/ui run test:run",
+    "test:storybook": "pnpm --filter @qatar-navigation-milaha/ui run test:storybook",
+    "test:storybook:run": "pnpm --filter @qatar-navigation-milaha/ui run test:storybook:run",
+    "ci": "pnpm run typecheck && pnpm run build && pnpm run test:run && pnpm run build-storybook && pnpm run test:storybook:run"
   }
 }

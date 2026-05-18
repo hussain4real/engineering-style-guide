@@ -20,6 +20,7 @@ describe("Button", () => {
     const button = screen.getByRole("button", { name: "Saving" });
     expect(button).toBeDisabled();
     expect(button).toHaveAttribute("aria-busy", "true");
+    expect(button).toHaveAttribute("aria-live", "polite");
   });
 
   it("fires click handlers when enabled", async () => {
