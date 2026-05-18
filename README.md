@@ -13,18 +13,19 @@ This workspace implements the MILAHA engineering style guide as a shared React/N
 
 ## Brand foundations
 
-The initial palette is sampled from the supplied brand swatches:
+The palette follows the official Milaha Brand Guidelines:
 
 | Token | Value | Intended role |
 | --- | --- | --- |
-| `brand.purple` | `#5E108B` | Primary brand and main action |
-| `brand.orange` | `#FF4B00` | Accent, highlight, focus |
-| `brand.navy` | `#002447` | Text and dark surfaces |
-| `brand.teal` | `#40BDAF` | Info and secondary emphasis |
-| `surface.mint` | `#EAF7F4` | Soft background |
+| `brand.purple` | `#5C0F8C` | Primary brand and main action |
+| `brand.orange` | `#FF5200` | Accent, highlight, focus |
+| `brand.navy` | `#041E42` | Text and dark surfaces |
+| `brand.teal` | `#3CBFAE` | Info and secondary emphasis |
+| `brand.lightTeal` | `#A7D5D2` | Soft dividers and supporting surfaces |
+| `surface.lightTealSoft` | `#BEDEDA` | Soft background |
 | `surface.white` | `#FFFFFF` | Default surface |
 
-`Neo Sans Pro` is the primary brand font. The package loads Poppins as the interim fallback until licensed Neo Sans Pro `.woff2` files are available.
+Arial is the official English typeface, with Arial Arabic for Arabic content. The shared UI stack is `Arial, "Arial Arabic", sans-serif`.
 
 ## Local development
 

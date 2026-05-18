@@ -5,19 +5,59 @@ import { brandTokens, componentTokens, semanticTokens, stateTokens, surfaceToken
 
 # Colors
 
-The palette starts with the supplied company swatches, then maps them into semantic roles for product UI.
+The palette follows the official Milaha Brand Guidelines primary and secondary colours.
 App code should prefer semantic tokens such as `primary`, `accent`, `text`, `background`, and `border`.
+Use the brand tokens when documenting brand decisions, and semantic tokens when building product UI.
 
-## Brand Palette
+## Official Brand Palette
 
 <ColorPalette>
-  <ColorItem title="Brand Purple" subtitle="Primary brand" colors={[brandTokens.purple.value]} />
-  <ColorItem title="Brand Orange" subtitle="Accent and focus" colors={[brandTokens.orange.value]} />
-  <ColorItem title="Brand Navy" subtitle="Text and dark surfaces" colors={[brandTokens.navy.value]} />
-  <ColorItem title="Brand Teal" subtitle="Info and secondary emphasis" colors={[brandTokens.teal.value]} />
-  <ColorItem title="Surface Mint" subtitle="Soft background" colors={[surfaceTokens.mint.value]} />
+  <ColorItem
+    title="Purple"
+    subtitle={brandTokens.purple.pantone}
+    colors={[brandTokens.purple.value, brandTokens.purple.tints[90].value, brandTokens.purple.tints[80].value, brandTokens.purple.tints[70].value]}
+  />
+  <ColorItem
+    title="Orange"
+    subtitle={brandTokens.orange.pantone}
+    colors={[brandTokens.orange.value, brandTokens.orange.tints[90].value, brandTokens.orange.tints[80].value, brandTokens.orange.tints[70].value]}
+  />
+  <ColorItem
+    title="Navy"
+    subtitle={brandTokens.navy.pantone}
+    colors={[brandTokens.navy.value, brandTokens.navy.tints[90].value, brandTokens.navy.tints[80].value, brandTokens.navy.tints[70].value]}
+  />
+  <ColorItem
+    title="Teal"
+    subtitle={brandTokens.teal.pantone}
+    colors={[brandTokens.teal.value, brandTokens.teal.tints[90].value, brandTokens.teal.tints[80].value, brandTokens.teal.tints[70].value]}
+  />
+  <ColorItem
+    title="Light Teal"
+    subtitle={brandTokens.lightTeal.pantone}
+    colors={[brandTokens.lightTeal.value, brandTokens.lightTeal.tints[90].value, brandTokens.lightTeal.tints[80].value, brandTokens.lightTeal.tints[70].value]}
+  />
+  <ColorItem title="Surface Light Teal Soft" subtitle="Pantone 7464C 70%" colors={[surfaceTokens.lightTealSoft.value]} />
   <ColorItem title="Surface White" subtitle="Default surface" colors={[surfaceTokens.white.value]} />
 </ColorPalette>
+
+| Token | Pantone | Hex | RGB | CMYK | Category |
+| --- | --- | --- | --- | --- | --- |
+| `brandTokens.purple` | `{brandTokens.purple.pantone}` | `{brandTokens.purple.value}` | `{brandTokens.purple.rgb}` | `{brandTokens.purple.cmyk}` | Primary |
+| `brandTokens.orange` | `{brandTokens.orange.pantone}` | `{brandTokens.orange.value}` | `{brandTokens.orange.rgb}` | `{brandTokens.orange.cmyk}` | Primary |
+| `brandTokens.navy` | `{brandTokens.navy.pantone}` | `{brandTokens.navy.value}` | `{brandTokens.navy.rgb}` | `{brandTokens.navy.cmyk}` | Secondary |
+| `brandTokens.teal` | `{brandTokens.teal.pantone}` | `{brandTokens.teal.value}` | `{brandTokens.teal.rgb}` | `{brandTokens.teal.cmyk}` | Secondary |
+| `brandTokens.lightTeal` | `{brandTokens.lightTeal.pantone}` | `{brandTokens.lightTeal.value}` | `{brandTokens.lightTeal.rgb}` | `{brandTokens.lightTeal.cmyk}` | Secondary |
+
+## Official Tints
+
+| Brand color | 90% | 80% | 70% |
+| --- | --- | --- | --- |
+| Purple | `{brandTokens.purple.tints[90].value}` | `{brandTokens.purple.tints[80].value}` | `{brandTokens.purple.tints[70].value}` |
+| Orange | `{brandTokens.orange.tints[90].value}` | `{brandTokens.orange.tints[80].value}` | `{brandTokens.orange.tints[70].value}` |
+| Navy | `{brandTokens.navy.tints[90].value}` | `{brandTokens.navy.tints[80].value}` | `{brandTokens.navy.tints[70].value}` |
+| Teal | `{brandTokens.teal.tints[90].value}` | `{brandTokens.teal.tints[80].value}` | `{brandTokens.teal.tints[70].value}` |
+| Light Teal | `{brandTokens.lightTeal.tints[90].value}` | `{brandTokens.lightTeal.tints[80].value}` | `{brandTokens.lightTeal.tints[70].value}` |
 
 ## Semantic Roles
 
@@ -34,9 +74,9 @@ App code should prefer semantic tokens such as `primary`, `accent`, `text`, `bac
 ## Contrast Notes
 
 - Use white text on purple and navy.
-- Use navy text on orange, teal, mint, and white.
-- Do not place white body text on orange or teal; those combinations are not strong enough for normal text.
-- Use orange for focus rings because it remains visible against white and mint surfaces.
+- Use navy text on orange, teal, light teal, light teal tints, and white.
+- Do not place white body text on orange, teal, or light teal; those combinations are not strong enough for normal text.
+- Use orange for focus rings because it remains visible against white and light teal surfaces.
 
 ## State Tokens
 

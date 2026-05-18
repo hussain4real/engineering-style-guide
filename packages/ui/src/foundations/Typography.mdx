@@ -4,16 +4,16 @@ import { Meta } from "@storybook/addon-docs/blocks";
 
 # Typography
 
-`Neo Sans Pro` is the primary company typeface. The UI package exposes it as `--font-sans` and maps it to Tailwind `font-sans`.
-Until licensed Neo Sans Pro web files are available, the package loads Poppins as the interim fallback.
+The official Milaha Brand Guidelines specify Arial for English documents and Arial Arabic for Arabic content.
+The UI package exposes this policy as `--font-sans` and maps it to Tailwind `font-sans`.
 
 ```css
 :root {
-  --font-sans: "Neo Sans Pro", "Poppins", Arial, sans-serif;
+  --font-sans: Arial, "Arial Arabic", sans-serif;
 }
 ```
 
-Licensed web font files should be self-hosted from `packages/ui/public/fonts` when available. Until then, the CSS variable falls back to Arial and the system sans-serif stack.
+Do not import substitute web fonts for Milaha UI foundations. Use the shared stack so product screens, internal documents, and bilingual surfaces remain aligned.
 
 <div className="space-y-6">
   <div>

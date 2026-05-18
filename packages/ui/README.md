@@ -34,4 +34,4 @@ Prefer semantic classes like `bg-primary`, `text-text`, `border-border`, and `bg
 
 ## Font
 
-`Neo Sans Pro` remains the primary brand face. The package loads Poppins as the interim fallback through `styles.css` until licensed Neo Sans Pro web files are available.
+Arial is the official English typeface, with Arial Arabic for Arabic content. The package exposes this as `Arial, "Arial Arabic", sans-serif` through `styles.css`.

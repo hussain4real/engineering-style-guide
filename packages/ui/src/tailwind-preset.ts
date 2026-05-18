@@ -9,10 +9,36 @@ const companyPreset = {
     extend: {
       colors: {
         brand: {
-          purple: "#5E108B",
-          orange: "#FF4B00",
-          navy: "#002447",
-          teal: "#40BDAF"
+          purple: {
+            DEFAULT: "#5C0F8C",
+            90: "#6F2C97",
+            80: "#8044A2",
+            70: "#915BAE"
+          },
+          orange: {
+            DEFAULT: "#FF5200",
+            90: "#FF6700",
+            80: "#FF7A25",
+            70: "#FF8C44"
+          },
+          navy: {
+            DEFAULT: "#041E42",
+            90: "#213052",
+            80: "#384463",
+            70: "#505976"
+          },
+          teal: {
+            DEFAULT: "#3CBFAE",
+            90: "#5AC6B5",
+            80: "#70CCBD",
+            70: "#85D3C5"
+          },
+          lightTeal: {
+            DEFAULT: "#A7D5D2",
+            90: "#ABD5CF",
+            80: "#B5D9D4",
+            70: "#BEDEDA"
+          }
         },
         primary: {
           DEFAULT: rgbVar("--color-primary"),
