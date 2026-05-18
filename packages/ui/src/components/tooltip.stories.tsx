@@ -12,6 +12,7 @@ const meta = {
     children: <Button variant="secondary">Hover or focus</Button>
   },
   parameters: {
+    layout: "centered",
     docs: {
       description: {
         component:
