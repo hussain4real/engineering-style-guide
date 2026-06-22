@@ -31,7 +31,8 @@ const preview: Preview = {
           ["Colors", "Typography", "Spacing, Radius, Shadows", "Accessibility"],
           "Components",
           ["Actions", "Forms", "Feedback", "Layout", "Navigation", "Overlays"],
-          "Engineering Guide"
+          "Engineering Guide",
+          ["Contribution Rules", "Templates"]
         ]
       }
     }

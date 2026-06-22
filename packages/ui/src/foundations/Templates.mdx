@@ -1,0 +1,58 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Engineering Guide/Templates" />
+
+# Engineering Templates
+
+MILAHA engineering delivery documents should use these templates as the required baseline. The Markdown files are the source of truth so teams can copy them into project repositories, review them in pull requests, and keep changes versioned with the work.
+
+## Shared Rules
+
+Every template must keep these fields:
+
+- `title`
+- `owner`
+- `status`
+- `reviewers`
+- `last_updated`
+- `related_links`
+- `source_materials_reviewed`
+
+Use the `source_materials_reviewed` section to show which inputs were checked before writing the document. A template is not ready for review if this section is empty.
+
+## Core Templates
+
+| Template | Use it when | Source |
+| --- | --- | --- |
+| BRS | Business, product, and engineering need alignment before design or build. | [`docs/templates/brs-template.md`](https://github.com/hussain4real/engineering-style-guide/blob/main/docs/templates/brs-template.md) |
+| Architecture Document | A feature or service has meaningful system, integration, security, data, or deployment decisions. | [`docs/templates/architecture-document-template.md`](https://github.com/hussain4real/engineering-style-guide/blob/main/docs/templates/architecture-document-template.md) |
+| Phased Implementation Plan | Work needs staged delivery, reviewable checkpoints, or cross-team coordination. | [`docs/templates/phased-implementation-plan-template.md`](https://github.com/hussain4real/engineering-style-guide/blob/main/docs/templates/phased-implementation-plan-template.md) |
+
+## Supporting Templates
+
+| Template | Use it when | Source |
+| --- | --- | --- |
+| Feature Brief / PRD-lite | Product intent needs quick alignment before a full BRS is justified. | [`docs/templates/feature-brief-prd-lite-template.md`](https://github.com/hussain4real/engineering-style-guide/blob/main/docs/templates/feature-brief-prd-lite-template.md) |
+| ADR | A technical decision should be recorded with context and tradeoffs. | [`docs/templates/adr-template.md`](https://github.com/hussain4real/engineering-style-guide/blob/main/docs/templates/adr-template.md) |
+| API Contract | Teams need stable endpoint, payload, auth, validation, and error expectations. | [`docs/templates/api-contract-template.md`](https://github.com/hussain4real/engineering-style-guide/blob/main/docs/templates/api-contract-template.md) |
+| Test Plan | A feature needs explicit testing scope and acceptance coverage. | [`docs/templates/test-plan-template.md`](https://github.com/hussain4real/engineering-style-guide/blob/main/docs/templates/test-plan-template.md) |
+| Release Checklist | A change is ready to ship and needs deployment readiness checks. | [`docs/templates/release-checklist-template.md`](https://github.com/hussain4real/engineering-style-guide/blob/main/docs/templates/release-checklist-template.md) |
+| Runbook | A released service or workflow needs operating instructions. | [`docs/templates/runbook-template.md`](https://github.com/hussain4real/engineering-style-guide/blob/main/docs/templates/runbook-template.md) |
+
+## Phased Implementation Statuses
+
+Use only these statuses in phased implementation plans:
+
+- `Not started`
+- `In progress`
+- `Blocked`
+- `Ready for review`
+- `Complete`
+
+## Review Expectations
+
+- The owner is accountable for keeping the document current.
+- Reviewers should be named before the document enters review.
+- Business and technical decisions should link to their source material.
+- Open risks and dependencies should be visible before implementation starts.
+- Approved documents should be updated when scope, architecture, or release plans materially change.

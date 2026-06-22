@@ -9,6 +9,7 @@ This workspace implements the MILAHA engineering style guide as a shared React/N
 - `@qatar-navigation-milaha/ui/tailwind-preset`: the shared Tailwind theme preset.
 - Storybook foundations for color, typography, spacing, radius, focus, and accessibility.
 - Storybook stories for V1 UI primitives.
+- Copyable engineering templates for BRS, architecture, phased implementation plans, and supporting delivery documents.
 - CI wiring for type checks, package build, unit tests, Storybook build, and Storybook browser tests.
 
 ## Brand foundations
@@ -58,6 +59,22 @@ For Storybook browser tests, install Playwright browsers first:
 pnpm exec playwright install chromium
 pnpm run test:storybook:run
 ```
+
+## Engineering templates
+
+Template source files live in `docs/templates` and are published through the Storybook `Engineering Guide/Templates` page.
+
+The required baseline includes:
+
+- BRS.
+- Architecture document.
+- Phased implementation plan.
+- Feature brief / PRD-lite.
+- ADR.
+- API contract.
+- Test plan.
+- Release checklist.
+- Runbook.
 
 ## Publishing
 
