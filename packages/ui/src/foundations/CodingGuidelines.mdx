@@ -1,0 +1,38 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Engineering Guide/Coding Guidelines" />
+
+# Coding Guidelines
+
+MILAHA teams should use the coding guidelines as the required baseline for new engineering work. The source file is [`docs/guidelines/coding-guidelines.md`](https://github.com/hussain4real/engineering-style-guide/blob/main/docs/guidelines/coding-guidelines.md).
+
+## Baseline
+
+- Keep changes small, typed, validated, observable, and testable.
+- Separate transport concerns from business rules.
+- Validate data at system boundaries.
+- Handle authorization, error paths, logging, and configuration deliberately.
+- Update tests and operational documentation when behavior changes.
+
+## Backend Standards
+
+| Framework | Required baseline |
+| --- | --- |
+| NestJS | Domain modules, thin controllers, provider-owned business logic, DTO validation, guards/interceptors for cross-cutting concerns, consistent exceptions, typed config, OpenAPI contracts, and focused tests. |
+| FastAPI | Domain routers, thin route handlers, Pydantic request/response schemas, dependency injection for shared context, explicit async boundaries, consistent errors, settings management, OpenAPI hygiene, and router/service tests. |
+
+## Frontend Standards
+
+- Use `@qatar-navigation-milaha/ui` before creating app-local reusable UI.
+- Add Storybook stories for reusable components.
+- Use semantic Tailwind tokens instead of raw brand colors.
+- Make accessibility, keyboard behavior, focus states, and browser tests part of the implementation.
+
+## Review Checklist
+
+- [ ] The change is scoped to one clear outcome.
+- [ ] Public interfaces, schemas, or API contracts are explicit.
+- [ ] Validation, authorization, and error paths are handled.
+- [ ] Tests cover behavior most likely to regress.
+- [ ] Logs, metrics, or runbooks exist for production-impacting work.
+- [ ] ADRs or architecture docs are updated for durable decisions.

@@ -29,6 +29,10 @@ Every template starts with:
 | [Test Plan](./test-plan-template.md) | A feature needs explicit testing scope and acceptance coverage. |
 | [Release Checklist](./release-checklist-template.md) | A change is ready to ship and needs deployment readiness checks. |
 | [Runbook](./runbook-template.md) | A released service or workflow needs operating instructions. |
+| [Pull Request Description](./pull-request-description-template.md) | A PR needs clear context, testing notes, risk, and rollout details. |
+| [Code Review Comment](./code-review-comment-template.md) | A reviewer needs to give actionable feedback with clear impact. |
+| [Engineering Handoff](./engineering-handoff-template.md) | Work moves between engineers, teams, support, or operations. |
+| [Commit Message Guide](./commit-message-template.md) | Engineers need consistent commit-message expectations. |
 
 ## Standard Phase Statuses
 

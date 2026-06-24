@@ -9,6 +9,7 @@ This workspace implements the MILAHA engineering style guide as a shared React/N
 - `@qatar-navigation-milaha/ui/tailwind-preset`: the shared Tailwind theme preset.
 - Storybook foundations for color, typography, spacing, radius, focus, and accessibility.
 - Storybook stories for V1 UI primitives.
+- Org-wide coding and code communication guidelines for backend, frontend, review, and handoff workflows.
 - Copyable engineering templates for BRS, architecture, phased implementation plans, and supporting delivery documents.
 - CI wiring for type checks, package build, unit tests, Storybook build, and Storybook browser tests.
 
@@ -75,6 +76,16 @@ The required baseline includes:
 - Test plan.
 - Release checklist.
 - Runbook.
+
+## Engineering guidelines
+
+Guideline source files live in `docs/guidelines` and are published through Storybook.
+
+The required baseline includes:
+
+- Coding guidelines for shared engineering rules, NestJS, FastAPI, React/Next.js, and Tailwind.
+- Code communication guidelines for PRs, commits, code review, review responses, status updates, handoffs, comments, and ADR triggers.
+- Copyable communication templates for pull requests, review comments, engineering handoffs, and commit messages.
 
 ## Publishing
 

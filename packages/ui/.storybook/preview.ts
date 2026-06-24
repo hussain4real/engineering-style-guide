@@ -32,7 +32,7 @@ const preview: Preview = {
           "Components",
           ["Actions", "Forms", "Feedback", "Layout", "Navigation", "Overlays"],
           "Engineering Guide",
-          ["Contribution Rules", "Templates"]
+          ["Contribution Rules", "Templates", "Coding Guidelines", "Code Communication"]
         ]
       }
     }

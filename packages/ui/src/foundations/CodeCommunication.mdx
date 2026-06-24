@@ -1,0 +1,42 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Engineering Guide/Code Communication" />
+
+# Code Communication
+
+Clear communication is part of engineering quality. MILAHA teams should use these standards for PRs, commits, review feedback, status updates, and handoffs. The source file is [`docs/guidelines/code-communication-guidelines.md`](https://github.com/hussain4real/engineering-style-guide/blob/main/docs/guidelines/code-communication-guidelines.md).
+
+## Required PR Context
+
+Every PR should explain:
+
+- Why the change is needed.
+- What changed.
+- How it was tested.
+- What risks, migrations, or rollout steps exist.
+- Which requirements, tickets, documents, ADRs, or incidents are linked.
+
+## Review Language
+
+Use clear importance labels when helpful:
+
+- `Blocking`
+- `Should fix`
+- `Suggestion`
+- `Question`
+- `Praise`
+
+Review comments should be specific, respectful, actionable, and tied to code, behavior, requirements, or documented standards.
+
+## Copyable Templates
+
+| Template | Source |
+| --- | --- |
+| Pull request description | [`docs/templates/pull-request-description-template.md`](https://github.com/hussain4real/engineering-style-guide/blob/main/docs/templates/pull-request-description-template.md) |
+| Code review comment | [`docs/templates/code-review-comment-template.md`](https://github.com/hussain4real/engineering-style-guide/blob/main/docs/templates/code-review-comment-template.md) |
+| Engineering handoff | [`docs/templates/engineering-handoff-template.md`](https://github.com/hussain4real/engineering-style-guide/blob/main/docs/templates/engineering-handoff-template.md) |
+| Commit message guide | [`docs/templates/commit-message-template.md`](https://github.com/hussain4real/engineering-style-guide/blob/main/docs/templates/commit-message-template.md) |
+
+## ADR Triggers
+
+Create or update an ADR when a decision changes architecture, introduces a major dependency, affects security or compliance, creates a cross-team contract, or will be hard to reverse later.
