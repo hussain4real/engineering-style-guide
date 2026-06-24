@@ -28,6 +28,16 @@ These guidelines are the required baseline for MILAHA engineering teams. They ap
 - Avoid abbreviations unless they are already standard inside MILAHA.
 - Name booleans as conditions, such as `isApproved`, `hasAccess`, or `shouldRetry`.
 
+Example:
+
+```ts
+// Preferred
+const isInvoiceApproved = approval.status === "approved";
+
+// Avoid
+const flag = approval.status === "approved";
+```
+
 ### Types And Contracts
 
 - Define explicit request, response, event, and persistence shapes.
@@ -42,6 +52,19 @@ These guidelines are the required baseline for MILAHA engineering teams. They ap
 - Handle expected failures explicitly.
 - Log enough context to debug production issues without leaking sensitive data.
 - Avoid swallowing exceptions unless the fallback is intentional and observable.
+
+Example:
+
+```ts
+// Preferred
+throw new BadRequestException({
+  code: "invalid_invoice_status",
+  message: "Invoice status must be pending before approval."
+});
+
+// Avoid
+throw new Error(`Invalid invoice payload: ${JSON.stringify(payload)}`);
+```
 
 ### Security
 
@@ -107,6 +130,47 @@ These guidelines are the required baseline for MILAHA engineering teams. They ap
 - Document public APIs with OpenAPI metadata when consumers need stable contracts.
 - Test controllers for routing/contract behavior and services for business behavior.
 
+Example controller and service split:
+
+```ts
+@Controller("invoices")
+export class InvoiceController {
+  constructor(private readonly invoices: InvoiceService) {}
+
+  @Post(":id/approve")
+  approve(@Param("id") id: string, @Body() dto: ApproveInvoiceDto) {
+    return this.invoices.approveInvoice(id, dto.approvedBy);
+  }
+}
+
+@Injectable()
+export class InvoiceService {
+  async approveInvoice(invoiceId: string, approvedBy: string) {
+    const invoice = await this.repository.findPending(invoiceId);
+
+    if (!invoice) {
+      throw new NotFoundException({
+        code: "invoice_not_found",
+        message: "Pending invoice was not found."
+      });
+    }
+
+    return this.repository.markApproved(invoiceId, approvedBy);
+  }
+}
+```
+
+Avoid putting business rules directly in controllers:
+
+```ts
+@Post(":id/approve")
+async approve(@Param("id") id: string, @Body() body: any) {
+  const invoice = await this.repository.findOne(id);
+  invoice.status = "approved";
+  return this.repository.save(invoice);
+}
+```
+
 ## FastAPI Guidelines
 
 - Organize routers by domain or capability.
@@ -120,6 +184,40 @@ These guidelines are the required baseline for MILAHA engineering teams. They ap
 - Test routers with realistic request/response assertions and services with focused unit tests.
 - Manage startup/shutdown tasks, background jobs, and external clients explicitly.
 
+Example router and service split:
+
+```py
+router = APIRouter(prefix="/invoices", tags=["Invoices"])
+
+
+class ApproveInvoiceRequest(BaseModel):
+    approved_by: str
+
+
+class InvoiceResponse(BaseModel):
+    id: str
+    status: str
+
+
+@router.post("/{invoice_id}/approve", response_model=InvoiceResponse)
+async def approve_invoice(
+    invoice_id: str,
+    payload: ApproveInvoiceRequest,
+    service: InvoiceService = Depends(get_invoice_service),
+) -> InvoiceResponse:
+    return await service.approve_invoice(invoice_id, payload.approved_by)
+```
+
+Avoid untyped payloads and mixed business logic in the route:
+
+```py
+@router.post("/{invoice_id}/approve")
+async def approve_invoice(invoice_id: str, payload: dict):
+    invoice = await db.fetch_invoice(invoice_id)
+    invoice["status"] = "approved"
+    return invoice
+```
+
 ## React, Next.js, And Tailwind Guidelines
 
 - Use `@qatar-navigation-milaha/ui` primitives before creating app-local reusable UI.
@@ -131,6 +229,36 @@ These guidelines are the required baseline for MILAHA engineering teams. They ap
 - Make accessibility part of the component API: labels, focus states, keyboard behavior, and ARIA wiring should not be afterthoughts.
 - Use browser tests for critical workflows and interaction-heavy UI.
 - Avoid raw brand colors in product code unless documenting tokens or building the design system itself.
+
+Example:
+
+```tsx
+import { Button } from "@qatar-navigation-milaha/ui";
+
+export function SubmitInvoiceAction() {
+  return (
+    <Button type="submit" variant="primary">
+      Submit invoice
+    </Button>
+  );
+}
+```
+
+Prefer semantic tokens:
+
+```tsx
+<section className="border border-border bg-background text-text">
+  Invoice summary
+</section>
+```
+
+Avoid raw brand colors in app code:
+
+```tsx
+<section className="border-[#041E42] bg-white text-[#041E42]">
+  Invoice summary
+</section>
+```
 
 ## Review Checklist
 

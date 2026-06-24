@@ -49,3 +49,23 @@ Summarize where the work stands now.
 - Rollback notes:
 - Monitoring or dashboard links:
 - Support or stakeholder notes:
+
+## Example
+
+```md
+## Current State
+The invoice approval API change is implemented and unit-tested. The PR is waiting for QA browser coverage.
+
+## Completed
+- [x] Added DTO/Pydantic validation for approval requests.
+- [x] Added service tests for valid and invalid transitions.
+
+## Remaining Work
+- [ ] Add browser coverage for approval from the invoice detail screen.
+- [ ] Confirm final validation message with product.
+
+## How To Continue
+1. Pull the branch and run the test suite.
+2. Add the browser test listed in the test plan.
+3. Update the PR with the final QA evidence.
+```

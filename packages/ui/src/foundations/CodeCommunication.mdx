@@ -16,6 +16,21 @@ Every PR should explain:
 - What risks, migrations, or rollout steps exist.
 - Which requirements, tickets, documents, ADRs, or incidents are linked.
 
+Example:
+
+```md
+## Summary
+- Adds approval validation to the invoice workflow.
+- Returns a documented error when an invoice is not pending.
+
+## Testing
+- pnpm run test:run
+- Manual API check for `POST /invoices/:id/approve`
+
+## Risk And Rollout
+- Risk: low; validation only affects invalid transitions.
+```
+
 ## Review Language
 
 Use clear importance labels when helpful:
@@ -27,6 +42,16 @@ Use clear importance labels when helpful:
 - `Praise`
 
 Review comments should be specific, respectful, actionable, and tied to code, behavior, requirements, or documented standards.
+
+Example:
+
+```text
+Should fix: This route accepts a raw dict, so invalid payloads can reach business logic.
+
+Impact: Consumers may receive inconsistent errors and OpenAPI will not describe the request contract.
+
+Suggested direction: Add a Pydantic request model and cover invalid payloads in a router test.
+```
 
 ## Copyable Templates
 

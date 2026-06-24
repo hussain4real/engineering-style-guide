@@ -21,12 +21,43 @@ MILAHA teams should use the coding guidelines as the required baseline for new e
 | NestJS | Domain modules, thin controllers, provider-owned business logic, DTO validation, guards/interceptors for cross-cutting concerns, consistent exceptions, typed config, OpenAPI contracts, and focused tests. |
 | FastAPI | Domain routers, thin route handlers, Pydantic request/response schemas, dependency injection for shared context, explicit async boundaries, consistent errors, settings management, OpenAPI hygiene, and router/service tests. |
 
+## Backend Examples
+
+NestJS controllers should delegate business behavior to providers:
+
+```ts
+@Post(":id/approve")
+approve(@Param("id") id: string, @Body() dto: ApproveInvoiceDto) {
+  return this.invoices.approveInvoice(id, dto.approvedBy);
+}
+```
+
+FastAPI routes should use Pydantic request and response models:
+
+```py
+@router.post("/{invoice_id}/approve", response_model=InvoiceResponse)
+async def approve_invoice(
+    invoice_id: str,
+    payload: ApproveInvoiceRequest,
+    service: InvoiceService = Depends(get_invoice_service),
+) -> InvoiceResponse:
+    return await service.approve_invoice(invoice_id, payload.approved_by)
+```
+
 ## Frontend Standards
 
 - Use `@qatar-navigation-milaha/ui` before creating app-local reusable UI.
 - Add Storybook stories for reusable components.
 - Use semantic Tailwind tokens instead of raw brand colors.
 - Make accessibility, keyboard behavior, focus states, and browser tests part of the implementation.
+
+Example:
+
+```tsx
+<section className="border border-border bg-background text-text">
+  Invoice summary
+</section>
+```
 
 ## Review Checklist
 
