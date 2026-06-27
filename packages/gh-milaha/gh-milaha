@@ -1,0 +1,151 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+readonly EXTENSION_VERSION="0.1.0"
+readonly STARTER_PACKAGE="${MILAHA_STARTER_PACKAGE:-@qatar-navigation-milaha/create-project@latest}"
+readonly PACKAGE_SCOPE="${MILAHA_PACKAGE_SCOPE:-@qatar-navigation-milaha}"
+readonly PACKAGE_REGISTRY="${MILAHA_PACKAGE_REGISTRY:-https://npm.pkg.github.com}"
+
+usage() {
+  cat <<'USAGE'
+Milaha GitHub CLI extension
+
+Usage:
+  gh milaha init [target-dir] [starter options]
+  gh milaha --help
+  gh milaha --version
+
+Examples:
+  gh milaha init my-service
+  gh milaha init my-api --backend fastapi
+  gh milaha init platform --backend nestjs --frontend nextjs
+  gh milaha init workflow-api --workflow-runtime temporal
+  gh milaha init simple-api --agent-runtime none --no-harness
+
+The extension uses your existing GitHub CLI login to read the private Milaha
+starter package. It writes no permanent npm configuration.
+
+If package access fails, refresh GitHub CLI auth with:
+  gh auth refresh -h github.com -s read:packages
+USAGE
+}
+
+fail() {
+  echo "gh milaha: $*" >&2
+  exit 1
+}
+
+command_exists() {
+  command -v "$1" >/dev/null 2>&1
+}
+
+node_major_version() {
+  node -p 'Number(process.versions.node.split(".")[0])' 2>/dev/null || echo 0
+}
+
+resolve_github_token() {
+  if [[ -n "${NODE_AUTH_TOKEN:-}" ]]; then
+    printf '%s' "${NODE_AUTH_TOKEN}"
+    return 0
+  fi
+
+  if [[ -n "${GH_TOKEN:-}" ]]; then
+    printf '%s' "${GH_TOKEN}"
+    return 0
+  fi
+
+  if [[ -n "${GITHUB_TOKEN:-}" ]]; then
+    printf '%s' "${GITHUB_TOKEN}"
+    return 0
+  fi
+
+  gh auth token 2>/dev/null || true
+}
+
+write_temp_npmrc() {
+  local token="$1"
+  local userconfig="$2"
+
+  cat >"${userconfig}" <<EOF
+${PACKAGE_SCOPE}:registry=${PACKAGE_REGISTRY}
+//npm.pkg.github.com/:_authToken=${token}
+always-auth=true
+EOF
+}
+
+run_starter() {
+  local token="$1"
+  local temp_dir
+  local userconfig
+  local status
+  shift
+
+  temp_dir="$(mktemp -d "${TMPDIR:-/tmp}/gh-milaha.XXXXXX")"
+  userconfig="${temp_dir}/.npmrc"
+  trap 'rm -rf "${temp_dir}"' EXIT
+
+  write_temp_npmrc "${token}" "${userconfig}"
+
+  set +e
+  NPM_CONFIG_USERCONFIG="${userconfig}" npm exec --yes --package="${STARTER_PACKAGE}" -- milaha "$@"
+  status=$?
+  set -e
+
+  if [[ "${status}" -ne 0 ]]; then
+    cat >&2 <<'ERROR_HELP'
+
+gh milaha could not run the starter package.
+
+If npm reported E401, E403, or package access errors, refresh GitHub CLI auth:
+  gh auth refresh -h github.com -s read:packages
+
+Then retry:
+  gh milaha init my-service
+ERROR_HELP
+  fi
+
+  exit "${status}"
+}
+
+main() {
+  if [[ "${1:-}" == "-h" || "${1:-}" == "--help" || "$#" -eq 0 ]]; then
+    usage
+    exit 0
+  fi
+
+  if [[ "${1:-}" == "--version" || "${1:-}" == "version" ]]; then
+    echo "gh-milaha ${EXTENSION_VERSION}"
+    exit 0
+  fi
+
+  command_exists gh || fail "GitHub CLI is required. Install it from https://cli.github.com/."
+  command_exists npm || fail "npm is required. Install Node.js 22 or newer."
+  command_exists node || fail "Node.js 22 or newer is required."
+
+  if [[ "$(node_major_version)" -lt 22 ]]; then
+    fail "Node.js 22 or newer is required. Current version: $(node -v 2>/dev/null || echo unknown)."
+  fi
+
+  local token
+  token="$(resolve_github_token)"
+  token="${token//$'\r'/}"
+  token="${token//$'\n'/}"
+
+  if [[ -z "${token}" ]]; then
+    cat >&2 <<'AUTH_HELP'
+gh milaha could not find GitHub authentication.
+
+Run:
+  gh auth login
+  gh auth refresh -h github.com -s read:packages
+
+Then retry:
+  gh milaha init my-service
+AUTH_HELP
+    exit 1
+  fi
+
+  run_starter "${token}" "$@"
+}
+
+main "$@"

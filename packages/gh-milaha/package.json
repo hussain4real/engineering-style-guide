@@ -1,0 +1,23 @@
+{
+  "name": "@qatar-navigation-milaha/gh-milaha",
+  "version": "0.1.0",
+  "description": "GitHub CLI extension wrapper for the Milaha starter kit.",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Qatar-Navigation-Milaha/gh-milaha.git"
+  },
+  "bin": {
+    "gh-milaha": "./gh-milaha"
+  },
+  "files": [
+    "gh-milaha",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "bash -n gh-milaha",
+    "typecheck": "bash -n gh-milaha",
+    "test": "bash test/run-tests.sh",
+    "test:run": "bash test/run-tests.sh"
+  }
+}

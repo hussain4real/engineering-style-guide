@@ -80,17 +80,22 @@ The required baseline includes:
 
 ## Starter kit CLI
 
-The `@qatar-navigation-milaha/create-project` workspace package provides the internal `milaha`
-binary for new project scaffolding:
+The `@qatar-navigation-milaha/create-project` workspace package provides the internal starter
+generator for new project scaffolding. Developers should use the `gh milaha` wrapper so their
+existing GitHub CLI login handles private package access without manual npm token setup:
 
 ```bash
-milaha init my-service
+gh auth login
+gh auth refresh -h github.com -s read:packages
+gh extension install Qatar-Navigation-Milaha/gh-milaha
+gh milaha init my-service
 ```
 
 V1 supports NestJS and FastAPI backends, optional Next.js, Mastra AI agent orchestration, Langfuse
 AI observability, OpenTelemetry trace-tag scaffolding, OpenAPI contract gates, GitHub CI, security
 checks, shared standards/templates, optional Claude harness installation, and 100% coverage
-enforcement for project-owned app code. The package is published internally to GitHub Packages.
+enforcement for project-owned app code. The package is published internally to GitHub Packages, and
+the `gh-milaha` extension creates only temporary npm configuration when it invokes the package.
 
 Generated Mastra projects keep agents in `apps/agents` and preserve `apps/api` as the boundary for
 authentication, authorization, business rules, validation, audit, rate limits, and approvals.

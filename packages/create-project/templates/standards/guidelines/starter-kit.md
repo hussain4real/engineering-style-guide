@@ -6,14 +6,23 @@ security checks, governed agentic AI baseline, and optional Claude harness used 
 
 ## Command
 
+Recommended internal path:
+
 ```bash
-milaha init my-service
+gh auth login
+gh auth refresh -h github.com -s read:packages
+gh extension install Qatar-Navigation-Milaha/gh-milaha
+gh milaha init my-service
 ```
 
-For one-off use before a global install:
+The `gh milaha` extension uses the developer's GitHub CLI login to access the private starter package
+and writes only temporary npm configuration for the child process. Developers do not need to edit
+`~/.npmrc`, export `NODE_AUTH_TOKEN`, or use pnpm/Corepack to start a project.
+
+For CI or package-maintainer use without the GitHub CLI extension:
 
 ```bash
-pnpm dlx @qatar-navigation-milaha/create-project milaha init my-service
+npm exec --yes --package=@qatar-navigation-milaha/create-project@latest -- milaha init my-service
 ```
 
 ## V1 Stack Options

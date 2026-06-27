@@ -5,8 +5,23 @@ Milaha project skeletons.
 
 ## Usage
 
+Recommended internal path:
+
 ```bash
-pnpm dlx @qatar-navigation-milaha/create-project milaha init my-service
+gh auth login
+gh auth refresh -h github.com -s read:packages
+gh extension install Qatar-Navigation-Milaha/gh-milaha
+gh milaha init my-service
+```
+
+The `gh milaha` extension uses the developer's existing GitHub CLI login to access the private
+GitHub Packages starter. It does not require developers to edit `~/.npmrc`, export
+`NODE_AUTH_TOKEN`, or use pnpm/Corepack to launch the starter.
+
+Direct package execution remains available for CI or maintainers:
+
+```bash
+npm exec --yes --package=@qatar-navigation-milaha/create-project@latest -- milaha init my-service
 ```
 
 After publishing and installing globally, the command is:
