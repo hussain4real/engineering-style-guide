@@ -1,0 +1,49 @@
+# pre-commit gates (Python). Copy to repo root as ./.pre-commit-config.yaml, then `pre-commit install`.
+# Same logical gates as gates/typescript/lefthook.yml. Bypass: <NAME>_BYPASS=1 (document in commit).
+default_install_hook_types: [pre-commit, pre-push]
+
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.6.0
+    hooks:
+      - id: ruff           # lint (auto-fix)
+        args: [--fix]
+      - id: ruff-format    # format
+
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.9
+    hooks:
+      - id: bandit         # SAST
+        args: [-q]
+
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.18.0
+    hooks:
+      - id: gitleaks       # secret scan
+
+  - repo: local
+    hooks:
+      - id: sensitive-files
+        name: block sensitive files
+        entry: bash -c 'git diff --cached --name-only | grep -iE "\.(env|pem|key|p12)$" | grep -v "\.env\.example$" && exit 1 || exit 0'
+        language: system
+        pass_filenames: false
+
+      - id: version-sync
+        name: version sync (VERSION == pyproject)
+        entry: bash -c '[ "${VERSION_SYNC_BYPASS:-0}" = "1" ] && exit 0; if [ -f VERSION ] && [ -f pyproject.toml ]; then V=$(tr -d " \n" < VERSION); P=$(sed -n "s/^version[[:space:]]*=[[:space:]]*\"\([^\"]*\)\".*/\1/p" pyproject.toml | head -1); [ "$V" = "$P" ] || { echo "version-sync: $V != $P"; exit 1; }; fi'
+        language: system
+        pass_filenames: false
+
+      - id: governance
+        name: governance phase C/B checks
+        entry: bash -c '[ "${GOVERNANCE_BYPASS:-0}" = "1" ] && exit 0; python3 harness/scripts/governance/validate_ai_inventory.py && python3 harness/scripts/governance/check_owners_coverage.py'
+        language: system
+        pass_filenames: false
+
+      - id: pytest-push
+        name: pytest (push)
+        entry: bash -c 'pytest -q'
+        language: system
+        pass_filenames: false
+        stages: [pre-push]

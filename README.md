@@ -11,6 +11,7 @@ This workspace implements the MILAHA engineering style guide as a shared React/N
 - Storybook stories for V1 UI primitives.
 - Org-wide coding and code communication guidelines for backend, frontend, review, and handoff workflows.
 - Copyable engineering templates for BRS, architecture, phased implementation plans, and supporting delivery documents.
+- Internal starter-kit CLI for scaffolding Milaha application repositories with standards, CI, security checks, optional Claude harness, and 100% app-code coverage.
 - CI wiring for type checks, package build, unit tests, Storybook build, and Storybook browser tests.
 
 ## Brand foundations
@@ -76,6 +77,19 @@ The required baseline includes:
 - Test plan.
 - Release checklist.
 - Runbook.
+
+## Starter kit CLI
+
+The `@qatar-navigation-milaha/create-project` workspace package provides the internal `milaha`
+binary for new project scaffolding:
+
+```bash
+milaha init my-service
+```
+
+V1 supports NestJS and FastAPI backends, optional Next.js, GitHub CI, security checks, shared
+standards/templates, optional Claude harness installation, and 100% coverage enforcement for
+project-owned app code. The package is published internally to GitHub Packages.
 
 ## Engineering guidelines
 

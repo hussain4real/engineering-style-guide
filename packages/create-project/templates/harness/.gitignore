@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+.venv/
+__pycache__/
+*.pyc
+
+# Build / caches
+.next/
+dist/
+build/
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
+
+# Secrets — never commit
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+
+# OS / editor
+.DS_Store
+*.swp
+.idea/
+.vscode/
+
+# Harness runtime (regenerated) — two-tier generated-artifact model (see gates/README.md):
+#  Tier 1 (machine-only snapshots: status JSON/XLSX) -> always gitignore, never track.
+#  Tier 2 (human-readable status, e.g. the dashboard) -> gitignore it (as below) OR track it
+#          with an idempotent generator + a self-healing consistency gate.
+# Generators are idempotent regardless, so even an un-ignored Tier-2 file never churns the tree.
+# Proven in OceanMate (artifact-lifecycle overhaul) + Taxera (idempotency + venv-python, PR #160).
+harness/DASHBOARD.md
+harness/status/
+*.snapshot.json
+.harness/locks/

@@ -1,0 +1,30 @@
+# AI System Inventory (AIP) — SCHEMA + one illustrative surface.
+# Lists every place the product uses an AI/LLM so it can be governed and audited.
+# Required by the Milaha security baseline (IS-GL-014 / IS-ST-004).
+# Validated by harness/scripts/governance/validate_ai_inventory.py.
+
+schema_version: "1.0"
+inventory_owner: "security-officer"
+last_refresh: "2026-01-01"
+governance_baseline: "IS-GL-014 / IS-ST-004"   # Milaha standards this inventory satisfies
+
+# Each entry describes one AI "surface" (a place the system calls a model).
+surfaces:
+  - id: "example-surface-1"
+    status: "active"            # active | planned | retired
+    use_case: "Describe what this AI surface does, in one line."
+    business_owner: "{{ORG_OR_OWNER}}"
+    autonomy_level: "L0"        # L0 recommend-only | L1 act-with-approval | ... (trust ladder)
+    risk_tier: "Low"            # Low | Medium | High
+    hitl_required: false        # human-in-the-loop required?
+    data_scope: "internal"      # public | internal | confidential | restricted
+    model: "<provider/model>"   # do not hardcode secrets; reference config
+    kill_switch_ref: "<path to the disable/kill switch>"
+    next_review_due: "2026-07-01"   # semi-annual review cadence per IS-ST-004
+    residual_risks:
+      - "List known residual risks (e.g. hallucination on edge inputs)."
+
+# Validation rules the gate enforces:
+#  - every active surface has: business_owner, risk_tier, data_scope, kill_switch_ref, next_review_due
+#  - High risk_tier => hitl_required: true
+#  - next_review_due is not in the past (IS-ST-004 semi-annual cadence)

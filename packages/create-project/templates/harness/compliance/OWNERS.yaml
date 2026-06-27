@@ -1,0 +1,9 @@
+# Control-area ownership. 'area: owner'. Checked by check_owners_coverage.py (no blank/TODO owners).
+# Replace owners with real names/roles for your project.
+
+secret_management: security-officer
+authentication: security-officer
+logging_audit: ops
+ai_governance: security-officer
+dependency_supply_chain: developer
+data_classification: security-officer

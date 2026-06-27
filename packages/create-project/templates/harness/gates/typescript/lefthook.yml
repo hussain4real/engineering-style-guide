@@ -1,0 +1,51 @@
+# lefthook gates (TypeScript / Node). Copy to repo root as ./lefthook.yml, then `lefthook install`.
+# Same logical gates as gates/python/.pre-commit-config.yaml. Bypass: <NAME>_BYPASS=1 (document in commit).
+
+pre-commit:
+  parallel: true
+  commands:
+    gitleaks:
+      glob: "*.{ts,tsx,js,json,yml,yaml,env,md,toml}"
+      run: gitleaks protect --staged --no-banner --config .gitleaks.toml
+
+    sensitive-files:
+      run: |
+        BLOCKED=$(git diff --cached --name-only | grep -iE '\.(env|pem|key|p12)$' | grep -v '\.env\.example$' || true)
+        if [ -n "$BLOCKED" ]; then echo "Blocked sensitive files:\n$BLOCKED" >&2; exit 1; fi
+
+    eslint:
+      glob: "*.{ts,tsx}"
+      run: ./node_modules/.bin/eslint --max-warnings 0 {staged_files}
+
+    typecheck:
+      glob: "*.{ts,tsx}"
+      run: npx tsc -b --noEmit
+
+    version-sync:
+      run: |
+        [ "${VERSION_SYNC_BYPASS:-0}" = "1" ] && exit 0
+        # VERSION is the source of truth; confirm package.json agrees.
+        if [ -f VERSION ] && [ -f package.json ]; then
+          V=$(cat VERSION | tr -d ' \n')
+          P=$(sed -n 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' package.json | head -1)
+          if [ "$V" != "$P" ]; then echo "version-sync: VERSION ($V) != package.json ($P)" >&2; exit 1; fi
+        fi
+
+    activity-log-nudge:
+      run: |
+        CODE=$(git diff --cached --name-only | grep -vE '^(harness/|docs/)' | head -1 || true)
+        LOG=$(git diff --cached --name-only | grep -E '^harness/logs/activity-' | head -1 || true)
+        if [ -n "$CODE" ] && [ -z "$LOG" ]; then echo "note: code changed without an activity-log entry (soft warn)"; fi
+
+    governance:
+      run: |
+        [ "${GOVERNANCE_BYPASS:-0}" = "1" ] && exit 0
+        python3 harness/scripts/governance/validate_ai_inventory.py
+        python3 harness/scripts/governance/check_owners_coverage.py
+
+pre-push:
+  commands:
+    typecheck-push:
+      run: npx tsc -b --noEmit
+    unit-tests:
+      run: npm test --silent

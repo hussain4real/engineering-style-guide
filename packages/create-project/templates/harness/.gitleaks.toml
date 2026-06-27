@@ -1,0 +1,14 @@
+# gitleaks config — generic. Extends the default ruleset; add project-specific allowlist paths below.
+title = "agent-harness-template gitleaks config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Project allowlist"
+# Add example/fixture paths that intentionally contain dummy tokens, e.g.:
+# paths = ['''tests/fixtures/.*''']
+regexes = [
+  '''EXAMPLE_[A-Z0-9_]+''',
+  '''dummy|placeholder|changeme''',
+]

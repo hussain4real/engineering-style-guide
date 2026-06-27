@@ -1,0 +1,91 @@
+name: Publish Starter Kit
+
+on:
+  workflow_dispatch:
+  release:
+    types:
+      - published
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  PACKAGE_DIR: packages/create-project
+  PACKAGE_NAME: "@qatar-navigation-milaha/create-project"
+  PACKAGE_SCOPE: "@qatar-navigation-milaha"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: pnpm
+          registry-url: https://npm.pkg.github.com
+          scope: ${{ env.PACKAGE_SCOPE }}
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm --filter @qatar-navigation-milaha/create-project run typecheck
+
+      - name: Test
+        run: pnpm --filter @qatar-navigation-milaha/create-project run test:run
+
+      - name: Build
+        run: pnpm --filter @qatar-navigation-milaha/create-project run build
+
+      - name: Validate GitHub Packages credentials
+        run: |
+          if [ -n "$GH_PACKAGES_TOKEN" ]; then
+            exit 0
+          fi
+
+          if [ "$GITHUB_REPOSITORY_OWNER" = "Qatar-Navigation-Milaha" ]; then
+            exit 0
+          fi
+
+          echo "::error::Add a GH_PACKAGES_TOKEN repository secret with write:packages access authorized for the Qatar-Navigation-Milaha org, or run this workflow from a repository owned by Qatar-Navigation-Milaha."
+          exit 1
+        env:
+          GH_PACKAGES_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN }}
+
+      - name: Read package version
+        run: |
+          node -e 'const pkg = require("./packages/create-project/package.json"); console.log(`PACKAGE_VERSION=${pkg.version}`)' >> "$GITHUB_ENV"
+
+      - name: Check GitHub Packages version
+        id: github-version
+        run: |
+          set +e
+          npm view "$PACKAGE_NAME@$PACKAGE_VERSION" version --registry=https://npm.pkg.github.com >/tmp/github-package-version 2>/tmp/github-package-error
+          status=$?
+          set -e
+
+          if [ "$status" -eq 0 ]; then
+            echo "published=true" >> "$GITHUB_OUTPUT"
+            echo "$PACKAGE_NAME@$PACKAGE_VERSION is already published on GitHub Packages."
+          elif grep -Eq "(E404|404 Not Found)" /tmp/github-package-error; then
+            echo "published=false" >> "$GITHUB_OUTPUT"
+          else
+            cat /tmp/github-package-error
+            exit "$status"
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: Publish to GitHub Packages
+        if: steps.github-version.outputs.published == 'false'
+        run: pnpm --filter @qatar-navigation-milaha/create-project publish --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN || secrets.GITHUB_TOKEN }}

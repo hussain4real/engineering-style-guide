@@ -1,0 +1,47 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Engineering Guide/Starter Kit" />
+
+# Starter Kit
+
+New Milaha application repositories should start from the internal starter kit CLI. It scaffolds the
+project structure, standards, CI, security checks, 100% app-code coverage, and the optional Claude
+harness in one guided walkthrough.
+
+## Command
+
+```bash
+milaha init my-service
+```
+
+For first use before a global install:
+
+```bash
+pnpm dlx @qatar-navigation-milaha/create-project milaha init my-service
+```
+
+## V1 Options
+
+| Prompt | Options | Default |
+| --- | --- | --- |
+| Backend | NestJS / TypeScript, FastAPI / Python | NestJS |
+| Frontend | None, Next.js / React | None |
+| Claude harness | Install, skip | Install |
+| Dependency install | Install, skip | Install |
+| Git initialization | Initialize, skip | Initialize |
+
+## Generated Baseline
+
+- `apps/api` for NestJS or FastAPI.
+- Optional `apps/web` for Next.js.
+- `docs/standards` and `docs/templates` copied from this guide.
+- `.github/workflows/ci.yml` with lint, typecheck, build, tests, 100% coverage, SAST, secret scanning, and dependency audit.
+- `.milaha/starter-manifest.json` with selected stack, starter version, overlays, and coverage policy.
+- Optional `.claude`, `harness`, `compliance`, and `product` governance files from the Milaha agent harness.
+
+## Coverage Rule
+
+Generated CI enforces 100% statements, branches, functions, and lines for project-owned app code.
+Framework bootstrap files, generated artifacts, test setup, and configuration glue are excluded.
+
+Source: [`docs/guidelines/starter-kit.md`](https://github.com/hussain4real/engineering-style-guide/blob/main/docs/guidelines/starter-kit.md)
