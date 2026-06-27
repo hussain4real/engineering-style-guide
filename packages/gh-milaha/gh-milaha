@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-readonly EXTENSION_VERSION="0.1.0"
+readonly EXTENSION_VERSION="0.1.1"
 readonly STARTER_PACKAGE="${MILAHA_STARTER_PACKAGE:-@qatar-navigation-milaha/create-project@latest}"
 readonly PACKAGE_SCOPE="${MILAHA_PACKAGE_SCOPE:-@qatar-navigation-milaha}"
 readonly PACKAGE_REGISTRY="${MILAHA_PACKAGE_REGISTRY:-https://npm.pkg.github.com}"
@@ -69,13 +69,15 @@ write_temp_npmrc() {
   cat >"${userconfig}" <<EOF
 ${PACKAGE_SCOPE}:registry=${PACKAGE_REGISTRY}
 //npm.pkg.github.com/:_authToken=${token}
-always-auth=true
 EOF
 }
 
 run_starter() {
   local token="$1"
+  local starter_entrypoint
   local temp_dir
+  local tarball_name
+  local tarball_path
   local userconfig
   local status
   shift
@@ -87,7 +89,47 @@ run_starter() {
   write_temp_npmrc "${token}" "${userconfig}"
 
   set +e
-  NPM_CONFIG_USERCONFIG="${userconfig}" npm exec --yes --package="${STARTER_PACKAGE}" -- milaha "$@"
+  tarball_name="$(
+    NPM_CONFIG_USERCONFIG="${userconfig}" \
+      npm pack "${STARTER_PACKAGE}" --pack-destination "${temp_dir}" --silent
+  )"
+  status=$?
+  set -e
+
+  if [[ "${status}" -ne 0 ]]; then
+    cat >&2 <<'ERROR_HELP'
+
+gh milaha could not download the starter package.
+
+If npm reported E401, E403, or package access errors, refresh GitHub CLI auth:
+  gh auth refresh -h github.com -s read:packages
+
+Then retry:
+  gh milaha init my-service
+ERROR_HELP
+    exit "${status}"
+  fi
+
+  tarball_name="${tarball_name##*$'\n'}"
+  tarball_path="${temp_dir}/${tarball_name}"
+
+  if [[ ! -f "${tarball_path}" ]]; then
+    fail "starter package download did not produce a tarball."
+  fi
+
+  mkdir -p "${temp_dir}/starter"
+  tar -xzf "${tarball_path}" -C "${temp_dir}/starter" --strip-components=1
+
+  if [[ ! -f "${temp_dir}/starter/dist/cli.js" ]]; then
+    fail "starter package is missing dist/cli.js."
+  fi
+
+  # macOS may hand mktemp paths back under /var while Node resolves module URLs under
+  # /private/var. Use the physical path so the starter CLI main guard runs.
+  starter_entrypoint="$(cd "${temp_dir}/starter/dist" && pwd -P)/cli.js"
+
+  set +e
+  node "${starter_entrypoint}" "$@"
   status=$?
   set -e
 
@@ -96,10 +138,7 @@ run_starter() {
 
 gh milaha could not run the starter package.
 
-If npm reported E401, E403, or package access errors, refresh GitHub CLI auth:
-  gh auth refresh -h github.com -s read:packages
-
-Then retry:
+Check the command options and retry:
   gh milaha init my-service
 ERROR_HELP
   fi
@@ -121,6 +160,7 @@ main() {
   command_exists gh || fail "GitHub CLI is required. Install it from https://cli.github.com/."
   command_exists npm || fail "npm is required. Install Node.js 22 or newer."
   command_exists node || fail "Node.js 22 or newer is required."
+  command_exists tar || fail "tar is required to extract the starter package."
 
   if [[ "$(node_major_version)" -lt 22 ]]; then
     fail "Node.js 22 or newer is required. Current version: $(node -v 2>/dev/null || echo unknown)."

@@ -59,6 +59,34 @@ set -euo pipefail
 if [[ -n "${NPM_CONFIG_USERCONFIG:-}" && -f "${NPM_CONFIG_USERCONFIG}" ]]; then
   cp "${NPM_CONFIG_USERCONFIG}" "${GH_MILAHA_TEST_LOG}.npmrc"
 fi
+
+pack_destination=""
+while [[ "$#" -gt 0 ]]; do
+  if [[ "$1" == "--pack-destination" ]]; then
+    pack_destination="${2:-}"
+    break
+  fi
+  shift
+done
+
+if [[ "${1:-}" != "pack" && "${pack_destination}" == "" ]]; then
+  exit 0
+fi
+
+mkdir -p "${pack_destination}/package/dist"
+cat >"${pack_destination}/package/dist/cli.js" <<'CLI'
+#!/usr/bin/env node
+const fs = require("node:fs");
+const log = process.env.GH_MILAHA_TEST_LOG;
+fs.appendFileSync(
+  log,
+  `cli:${process.argv.slice(2).map((arg) => ` <${arg}>`).join("")}\n`
+);
+CLI
+chmod +x "${pack_destination}/package/dist/cli.js"
+tar -czf "${pack_destination}/qatar-navigation-milaha-create-project-0.0.0.tgz" -C "${pack_destination}" package
+rm -rf "${pack_destination}/package"
+printf '%s\n' "qatar-navigation-milaha-create-project-0.0.0.tgz"
 EOF
 
   chmod +x "${fake_bin}/gh" "${fake_bin}/npm"
@@ -84,12 +112,17 @@ test_uses_gh_auth_token_and_temp_npmrc() {
   fake_bin="$(with_fake_tools "${temp_dir}" "from-gh")"
 
   GH_MILAHA_TEST_LOG="${log_file}" PATH="${fake_bin}:$PATH" \
-    assert_command_succeeds "init through npm exec" \
+    assert_command_succeeds "init through starter package tarball" \
     "${ROOT_DIR}/gh-milaha" init my-service --backend fastapi --no-harness
 
-  assert_file_contains "${log_file}" "argv: <exec> <--yes> <--package=@qatar-navigation-milaha/create-project@latest> <--> <milaha> <init> <my-service> <--backend> <fastapi> <--no-harness>"
+  assert_file_contains "${log_file}" "argv: <pack> <@qatar-navigation-milaha/create-project@latest> <--pack-destination>"
+  assert_file_contains "${log_file}" "cli: <init> <my-service> <--backend> <fastapi> <--no-harness>"
   assert_file_contains "${log_file}.npmrc" "@qatar-navigation-milaha:registry=https://npm.pkg.github.com"
   assert_file_contains "${log_file}.npmrc" "//npm.pkg.github.com/:_authToken=from-gh"
+  if grep -Fq "always-auth" "${log_file}.npmrc"; then
+    echo "Temporary npm config must not include deprecated always-auth." >&2
+    exit 1
+  fi
 }
 
 test_prefers_existing_node_auth_token() {

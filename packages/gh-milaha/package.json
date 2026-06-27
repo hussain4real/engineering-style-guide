@@ -1,6 +1,6 @@
 {
   "name": "@qatar-navigation-milaha/gh-milaha",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "GitHub CLI extension wrapper for the Milaha starter kit.",
   "license": "UNLICENSED",
   "repository": {

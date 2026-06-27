@@ -17,8 +17,9 @@ gh extension install Qatar-Navigation-Milaha/gh-milaha
 gh milaha init my-service
 ```
 
-The extension uses `gh auth token` to create a temporary npm config for the child process, runs the
-private starter package with `npm exec`, and deletes the temporary config when it exits.
+The extension uses `gh auth token` to create a temporary npm config for the child process, downloads
+the private starter package with `npm pack`, runs its bundled CLI with Node.js, and deletes the
+temporary config when it exits.
 
 It does not write `~/.npmrc`, require `NODE_AUTH_TOKEN`, or require pnpm/Corepack to launch the
 starter.
