@@ -246,6 +246,8 @@ export const frontendAdapters: Record<string, FrontendAdapter> = {
           "--app",
           "--src-dir",
           "--use-pnpm",
+          "--skip-install",
+          "--disable-git",
           "--yes"
         ],
         cwd: config.targetDir,

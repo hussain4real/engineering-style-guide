@@ -42,6 +42,13 @@ function rootPackage(config: StarterConfig): GeneratedFile[] {
       path: "pnpm-workspace.yaml",
       content: `packages:
   - "apps/*"
+
+allowBuilds:
+  '@scarf/scarf': false
+  esbuild: true
+  protobufjs: true
+  sharp: true
+  unrs-resolver: true
 `
     },
     {
@@ -471,7 +478,7 @@ regexes = [
       content: `${JSON.stringify(
         {
           starterPackage: "@qatar-navigation-milaha/create-project",
-          starterVersion: "0.1.2",
+          starterVersion: "0.1.3",
           generatedAt: new Date().toISOString().slice(0, 10),
           project: {
             name: config.projectName,

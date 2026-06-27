@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-readonly EXTENSION_VERSION="0.1.1"
+readonly EXTENSION_VERSION="0.1.2"
 readonly STARTER_PACKAGE="${MILAHA_STARTER_PACKAGE:-@qatar-navigation-milaha/create-project@latest}"
 readonly PACKAGE_SCOPE="${MILAHA_PACKAGE_SCOPE:-@qatar-navigation-milaha}"
 readonly PACKAGE_REGISTRY="${MILAHA_PACKAGE_REGISTRY:-https://npm.pkg.github.com}"
@@ -129,7 +129,10 @@ ERROR_HELP
   starter_entrypoint="$(cd "${temp_dir}/starter/dist" && pwd -P)/cli.js"
 
   set +e
-  node "${starter_entrypoint}" "$@"
+  NPM_CONFIG_USERCONFIG="${userconfig}" \
+    npm_config_userconfig="${userconfig}" \
+    NODE_AUTH_TOKEN="${token}" \
+    node "${starter_entrypoint}" "$@"
   status=$?
   set -e
 

@@ -80,7 +80,9 @@ const fs = require("node:fs");
 const log = process.env.GH_MILAHA_TEST_LOG;
 fs.appendFileSync(
   log,
-  `cli:${process.argv.slice(2).map((arg) => ` <${arg}>`).join("")}\n`
+  `cli:${process.argv.slice(2).map((arg) => ` <${arg}>`).join("")}\n` +
+    `cli_userconfig:${process.env.NPM_CONFIG_USERCONFIG ?? ""}\n` +
+    `cli_token:${process.env.NODE_AUTH_TOKEN ?? ""}\n`
 );
 CLI
 chmod +x "${pack_destination}/package/dist/cli.js"
@@ -117,6 +119,8 @@ test_uses_gh_auth_token_and_temp_npmrc() {
 
   assert_file_contains "${log_file}" "argv: <pack> <@qatar-navigation-milaha/create-project@latest> <--pack-destination>"
   assert_file_contains "${log_file}" "cli: <init> <my-service> <--backend> <fastapi> <--no-harness>"
+  assert_file_contains "${log_file}" "cli_userconfig:"
+  assert_file_contains "${log_file}" "cli_token:from-gh"
   assert_file_contains "${log_file}.npmrc" "@qatar-navigation-milaha:registry=https://npm.pkg.github.com"
   assert_file_contains "${log_file}.npmrc" "//npm.pkg.github.com/:_authToken=from-gh"
   if grep -Fq "always-auth" "${log_file}.npmrc"; then

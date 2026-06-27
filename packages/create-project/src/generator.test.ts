@@ -94,7 +94,7 @@ describe("initProject", () => {
 
   it("generates optional Next.js frontend files", async () => {
     const cwd = await tempRoot();
-    await initProject(
+    const result = await initProject(
       {
         targetDir: "portal",
         projectName: "Portal",
@@ -118,7 +118,13 @@ describe("initProject", () => {
     expect(await readFile(root, "apps/web/tailwind.config.ts")).toContain(
       "@qatar-navigation-milaha/ui/tailwind-preset"
     );
+    expect(await readFile(root, "pnpm-workspace.yaml")).toContain("sharp: true");
+    expect(await readFile(root, "pnpm-workspace.yaml")).toContain("'@scarf/scarf': false");
     expect(await readFile(root, ".github/workflows/ci.yml")).toContain("pnpm audit");
+    expect(
+      result.commands.find((command) => command.description === "Next.js official project generator")
+        ?.args
+    ).toContain("--skip-install");
   });
 
   it("can disable the agent runtime", async () => {
