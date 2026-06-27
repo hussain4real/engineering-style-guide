@@ -2,7 +2,7 @@
 
 The Milaha starter kit is the required starting point for new internal application repositories.
 It gives teams a project skeleton with the same engineering standards, CI gates, coverage policy,
-security checks, and optional Claude harness used across the organization.
+security checks, governed agentic AI baseline, and optional Claude harness used across the organization.
 
 ## Command
 
@@ -22,6 +22,10 @@ pnpm dlx @qatar-navigation-milaha/create-project milaha init my-service
 | --- | --- | --- |
 | Backend | NestJS / TypeScript, FastAPI / Python | NestJS |
 | Frontend | None, Next.js / React | None |
+| Agent orchestration runtime | Mastra AI, none | Mastra AI |
+| AI observability | Langfuse, none | Langfuse when Mastra is enabled |
+| Telemetry | OpenTelemetry, none | OpenTelemetry |
+| Durable workflow runtime | None, Temporal scaffold | None |
 | Claude harness | Install, skip | Install |
 | Dependency install | Install, skip | Install |
 | Git initialization | Initialize, skip | Initialize |
@@ -32,14 +36,28 @@ Every generated repository includes:
 
 - `apps/api` for the selected backend.
 - Optional `apps/web` for Next.js.
+- `apps/agents` with a governed Mastra runtime when agent orchestration is enabled.
+- `contracts/openapi`, `contracts/api-governance`, and agent-tool contracts for API and tool review.
 - `docs/standards` with coding and code-communication guidelines.
 - `docs/templates` with the shared engineering templates.
 - `.github/workflows/ci.yml` with lint, typecheck, build, test, coverage, security, and dependency checks.
 - `.gitleaks.toml` and sensitive-file blocking.
-- `.milaha/starter-manifest.json` recording selected stack, starter version, overlays, and coverage policy.
+- `.milaha/starter-manifest.json` recording selected stack, agent runtime, governance profile, overlays, and coverage policy.
 
 When the Claude harness is enabled, the project also receives `.claude`, `harness`, `compliance`,
 `product`, and related governance files from `Qatar-Navigation-Milaha/agent-harness`.
+
+## Agentic AI Boundary
+
+Mastra is the v1 orchestration implementation for AI-enabled starters. It is intentionally generated
+as `apps/agents` so it can be replaced later without moving business controls into the runtime.
+Authentication, authorization, business rules, validation, audit logging, rate limits, and approval
+decisions stay in `apps/api`.
+
+Generated Mastra projects include a sample governed tool, a tool-policy registry, Langfuse
+configuration helpers, required OpenTelemetry trace tags, baseline evaluation placeholders, and
+ARC-style templates for use-case registration, data classification, guardrails, tool registry,
+evaluation planning, and production readiness.
 
 ## Coverage Policy
 
@@ -55,6 +73,9 @@ Generated CI includes:
 - Sensitive-file blocking for `.env`, key, certificate, and private-key file types.
 - Dependency audit for the selected stack.
 - Stack SAST: TypeScript security linting or Python Bandit.
+- OpenAPI contract drift checks.
+- Mastra governance and baseline evaluation checks when `apps/agents` is present.
+- Langfuse configuration and OpenTelemetry trace-tag checks when enabled.
 - Harness governance validation when the Claude harness is installed.
 
 ## Maintenance

@@ -2,7 +2,15 @@
 import { pathToFileURL } from "node:url";
 import { collectPromptInput } from "./prompts.js";
 import { initProject } from "./generator.js";
-import type { BackendFramework, FrontendFramework, StarterConfigInput } from "./types.js";
+import type {
+  AgentRuntime,
+  AiObservability,
+  BackendFramework,
+  FrontendFramework,
+  StarterConfigInput,
+  TelemetryProvider,
+  WorkflowRuntime
+} from "./types.js";
 
 interface ParsedArgs {
   command?: string;
@@ -23,6 +31,12 @@ Options:
   --no-install           Skip dependency installation
   --backend <value>      nestjs | fastapi
   --frontend <value>     none | nextjs
+  --agent-runtime <value> none | mastra
+  --ai-observability <value>
+                         none | langfuse
+  --telemetry <value>    none | opentelemetry
+  --workflow-runtime <value>
+                         none | temporal
   --harness              Install the Claude harness
   --no-harness           Skip the Claude harness
   --git                  Initialize git
@@ -72,6 +86,30 @@ export function parseArgs(argv: string[]): ParsedArgs {
 
     if (arg === "--frontend") {
       input.frontend = takeValue(rest, index, arg) as FrontendFramework;
+      index += 1;
+      continue;
+    }
+
+    if (arg === "--agent-runtime") {
+      input.agentRuntime = takeValue(rest, index, arg) as AgentRuntime;
+      index += 1;
+      continue;
+    }
+
+    if (arg === "--ai-observability") {
+      input.aiObservability = takeValue(rest, index, arg) as AiObservability;
+      index += 1;
+      continue;
+    }
+
+    if (arg === "--telemetry") {
+      input.telemetry = takeValue(rest, index, arg) as TelemetryProvider;
+      index += 1;
+      continue;
+    }
+
+    if (arg === "--workflow-runtime") {
+      input.workflowRuntime = takeValue(rest, index, arg) as WorkflowRuntime;
       index += 1;
       continue;
     }

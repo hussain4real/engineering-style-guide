@@ -7,6 +7,18 @@ function rootPackage(config: StarterConfig): GeneratedFile[] {
     return [];
   }
 
+  const scripts: Record<string, string> = {
+    lint: "pnpm -r --if-present lint",
+    typecheck: "pnpm -r --if-present typecheck",
+    build: "pnpm -r --if-present build",
+    test: "pnpm -r --if-present test",
+    "test:coverage": "pnpm -r --if-present test:coverage",
+    "openapi:check": "pnpm -r --if-present openapi:check",
+    "governance:check": "pnpm -r --if-present governance:check",
+    "eval:baseline": "pnpm -r --if-present eval:baseline",
+    ci: "pnpm run lint && pnpm run typecheck && pnpm run build && pnpm run test:coverage && pnpm run openapi:check && pnpm run governance:check"
+  };
+
   return [
     {
       path: "package.json",
@@ -20,14 +32,7 @@ function rootPackage(config: StarterConfig): GeneratedFile[] {
             node: ">=22.12.0"
           },
           workspaces: ["apps/*"],
-          scripts: {
-            lint: "pnpm -r --if-present lint",
-            typecheck: "pnpm -r --if-present typecheck",
-            build: "pnpm -r --if-present build",
-            test: "pnpm -r --if-present test",
-            "test:coverage": "pnpm -r --if-present test:coverage",
-            ci: "pnpm run lint && pnpm run typecheck && pnpm run build && pnpm run test:coverage"
-          }
+          scripts
         },
         null,
         2
@@ -65,8 +70,12 @@ function localGateFiles(config: StarterConfig): GeneratedFile[] {
       run: pnpm run lint
     typecheck:
       run: pnpm run typecheck
+    openapi-contract:
+      run: pnpm run openapi:check
     test-coverage:
       run: pnpm run test:coverage
+    agent-governance:
+      run: pnpm run governance:check
     governance:
       run: |
         [ "\${GOVERNANCE_BYPASS:-0}" = "1" ] && exit 0
@@ -121,7 +130,17 @@ repos:
         language: system
         pass_filenames: false
         stages: [pre-push]
-      - id: governance
+      - id: openapi-contract
+        name: OpenAPI contract check
+        entry: bash -c 'cd apps/api && uv run python scripts/export_openapi.py --check'
+        language: system
+        pass_filenames: false
+${hasNodeWorkspace(config) ? `      - id: node-agent-governance
+        name: Node agent governance
+        entry: bash -c 'pnpm run governance:check'
+        language: system
+        pass_filenames: false
+` : ""}      - id: governance
         name: governance metadata
         entry: bash -c 'if [ -d harness/scripts/governance ]; then python3 harness/scripts/governance/validate_ai_inventory.py && python3 harness/scripts/governance/check_owners_coverage.py; fi'
         language: system
@@ -131,10 +150,219 @@ repos:
   ];
 }
 
+function openApiContract(config: StarterConfig): string {
+  return `${JSON.stringify(
+    {
+      openapi: "3.1.0",
+      info: {
+        title: `${config.projectName} API`,
+        version: "0.1.0",
+        description: config.projectOneLiner
+      },
+      paths: {
+        "/health": {
+          get: {
+            operationId: "getHealth",
+            tags: ["health"],
+            responses: {
+              "200": {
+                description: "Service health response"
+              }
+            }
+          }
+        }
+      }
+    },
+    null,
+    2
+  )}\n`;
+}
+
+function agenticGovernanceFiles(config: StarterConfig): GeneratedFile[] {
+  if (config.agentRuntime !== "mastra") {
+    return [];
+  }
+
+  return [
+    {
+      path: "contracts/agent-tools/tool-registry.yaml",
+      content: `tools:
+  - id: service-health
+    owner: platform-engineering
+    side_effect_level: read
+    human_approval_required: false
+    allowed_scopes:
+      - health:read
+    data_classification: internal
+    api_boundary: apps/api
+  - id: sensitive-action
+    owner: platform-engineering
+    side_effect_level: write
+    human_approval_required: true
+    allowed_scopes:
+      - agent:approve
+    data_classification: restricted
+    api_boundary: apps/api
+`
+    },
+    {
+      path: "contracts/observability/trace-tags.md",
+      content: `# Required Agent Trace Tags
+
+Every Mastra agent/tool span must carry these tags before production use.
+
+| Tag | Purpose |
+| --- | --- |
+| \`milaha.project\` | Project/repository slug |
+| \`milaha.agent_runtime\` | Runtime implementation, currently \`mastra\` |
+| \`milaha.agent_id\` | Agent identifier |
+| \`milaha.tool_id\` | Tool identifier |
+| \`milaha.correlation_id\` | End-to-end request correlation |
+| \`milaha.data_classification\` | Data sensitivity level |
+`
+    },
+    {
+      path: "docs/templates/agentic-ai-use-case-registration-template.md",
+      content: `# Agentic AI Use Case Registration
+
+## Use Case
+
+- Name:
+- Owner:
+- Business capability:
+- Customer-facing or internal:
+- Advisory or action-taking:
+- Read-only or write-capable:
+
+## Scope
+
+- Allowed APIs/tools:
+- Disallowed APIs/tools:
+- Required human approvals:
+- Runtime/cost limits:
+- Rollback owner:
+
+## Review
+
+- Data classification:
+- Model/provider approval:
+- Architecture review outcome:
+- Production readiness decision:
+`
+    },
+    {
+      path: "docs/templates/agent-tool-registry-template.md",
+      content: `# Agent Tool Registry
+
+| Tool ID | Owner | API boundary | Scopes | Side effect | Human approval | Data classification |
+| --- | --- | --- | --- | --- | --- | --- |
+| \`service-health\` | platform-engineering | \`apps/api\` | \`health:read\` | read | no | internal |
+`
+    },
+    {
+      path: "docs/templates/agent-guardrails-template.md",
+      content: `# Agent Guardrails
+
+## Identity and Ownership
+
+- Agent owner:
+- Support owner:
+- Rollback owner:
+
+## Runtime Controls
+
+- Allowed models:
+- Allowed tools:
+- Token/cost limits:
+- Rate limits:
+
+## Safety Controls
+
+- Prompt-injection defenses:
+- PII/data leakage controls:
+- Output validation:
+- Human approval triggers:
+- Feedback loop:
+`
+    },
+    {
+      path: "docs/templates/agent-evaluation-plan-template.md",
+      content: `# Agent Evaluation Plan
+
+## Dataset
+
+- Dataset name:
+- Source:
+- Data classification:
+- Refresh cadence:
+
+## Checks
+
+- Functional correctness:
+- Tool-use correctness:
+- Prompt-injection resistance:
+- Data leakage:
+- Cost/latency:
+- Regression threshold:
+
+## Evidence
+
+- Langfuse project/link:
+- Evaluation run:
+- Approval decision:
+`
+    },
+    {
+      path: "docs/templates/ai-data-classification-template.md",
+      content: `# AI Data Classification
+
+| Surface | Classification | Retention | Export allowed | Notes |
+| --- | --- | --- | --- | --- |
+| Prompts |  |  |  |  |
+| Completions |  |  |  |  |
+| Retrieved context |  |  |  |  |
+| Tool inputs/outputs |  |  |  |  |
+| Traces/evaluations |  |  |  |  |
+`
+    },
+    {
+      path: "docs/templates/ai-production-readiness-template.md",
+      content: `# AI Production Readiness
+
+- [ ] Use case registered.
+- [ ] Data classification approved.
+- [ ] Model/provider approved.
+- [ ] OpenAPI/tool contracts reviewed.
+- [ ] Guardrails implemented.
+- [ ] Langfuse/telemetry configured.
+- [ ] Baseline evaluation passed.
+- [ ] Human approval flow tested.
+- [ ] Rollback owner confirmed.
+`
+    },
+    ...(config.includeHarness
+      ? [{
+      path: ".claude/playbooks/mastra-agent-migration.md",
+      content: `# Mastra Agent Migration Playbook
+
+Use this playbook when moving agent behavior into the governed Mastra runtime.
+
+1. Register the use case in \`docs/templates/agentic-ai-use-case-registration-template.md\`.
+2. Define or update tool contracts in \`contracts/agent-tools/tool-registry.yaml\`.
+3. Keep business rules, RBAC, validation, audit, and approvals in \`apps/api\`.
+4. Add Langfuse evaluation evidence before production promotion.
+5. Confirm OpenAPI contract and trace-tag gates are green.
+`
+      }]
+      : [])
+  ];
+}
+
 export function sharedOverlayFiles(config: StarterConfig): GeneratedFile[] {
   return [
     ...rootPackage(config),
     ...localGateFiles(config),
+    ...agenticGovernanceFiles(config),
     {
       path: "README.md",
       content: `# ${config.projectName}
@@ -147,6 +375,10 @@ Generated with the Milaha starter kit.
 
 - Backend: ${config.backend === "nestjs" ? "NestJS / TypeScript" : "FastAPI / Python"}
 - Frontend: ${config.frontend === "nextjs" ? "Next.js / React" : "None"}
+- Agent runtime: ${config.agentRuntime === "mastra" ? "Mastra AI" : "None"}
+- AI observability: ${config.aiObservability === "langfuse" ? "Langfuse" : "None"}
+- Telemetry: ${config.telemetry === "opentelemetry" ? "OpenTelemetry" : "None"}
+- Workflow runtime: ${config.workflowRuntime === "temporal" ? "Temporal" : "None"}
 - Claude harness: ${config.includeHarness ? "Enabled" : "Disabled"}
 - Coverage gate: 100% statements, branches, functions, and lines for project-owned app code.
 
@@ -159,6 +391,12 @@ ${config.backend === "fastapi" ? "- `cd apps/api && uv sync --dev`\n- `cd apps/a
 - \`docs/standards/coding-guidelines.md\`
 - \`docs/standards/code-communication-guidelines.md\`
 - \`docs/templates/README.md\`
+
+## Agentic AI boundary
+
+When \`apps/agents\` is present, treat it as orchestration only. Agents call governed tools and APIs;
+\`apps/api\` remains responsible for authentication, authorization, business rules, validation, audit,
+rate limits, and human approval decisions.
 `
     },
     {
@@ -208,6 +446,27 @@ regexes = [
       content: renderCiWorkflow(config)
     },
     {
+      path: "contracts/openapi/api.json",
+      content: openApiContract(config)
+    },
+    {
+      path: "contracts/api-governance/api-product.yaml",
+      content: `api_product:
+  name: ${config.projectSlug}-api
+  owner: platform-engineering
+  lifecycle: draft
+  backend: ${config.backend}
+  route_prefix: /api
+  version: v1
+  scopes:
+    - health:read
+  quotas:
+    default_rpm: 600
+  deprecation:
+    policy: 90-day notice before removing a published route
+`
+    },
+    {
       path: ".milaha/starter-manifest.json",
       content: `${JSON.stringify(
         {
@@ -221,15 +480,29 @@ regexes = [
           stack: {
             backend: config.backend,
             frontend: config.frontend,
+            agentRuntime: config.agentRuntime,
+            aiObservability: config.aiObservability,
+            telemetry: config.telemetry,
+            workflowRuntime: config.workflowRuntime,
             primaryLanguage: config.primaryLanguage,
             packageManager: config.packageManager,
             pythonTooling: config.pythonTooling
+          },
+          governance: {
+            profile: config.governanceProfile,
+            apiBoundary: "apps/api",
+            agentRuntimeBoundary: config.agentRuntime === "mastra" ? "apps/agents" : null
           },
           overlays: {
             harness: config.includeHarness,
             standards: true,
             githubCi: true,
-            securityChecks: true
+            securityChecks: true,
+            openApiContractGate: true,
+            agentGovernance: config.agentRuntime === "mastra",
+            langfuse: config.aiObservability === "langfuse",
+            openTelemetry: config.telemetry === "opentelemetry",
+            temporal: config.workflowRuntime === "temporal"
           },
           coveragePolicy: config.coveragePolicy
         },

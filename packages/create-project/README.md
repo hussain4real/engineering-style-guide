@@ -20,10 +20,18 @@ milaha init my-service
 - NestJS / TypeScript API.
 - FastAPI / Python API with `uv`.
 - Optional Next.js / React frontend.
+- Mastra AI agent orchestration in `apps/agents` by default.
+- Langfuse AI observability and OpenTelemetry trace-tag scaffolding.
+- OpenAPI contract and API-governance metadata.
+- Optional Temporal workflow scaffold.
 - Optional Claude harness from `Qatar-Navigation-Milaha/agent-harness`.
 
 Generated projects include GitHub CI, gitleaks, sensitive-file checks, stack SAST, dependency audit,
-local gate config, Milaha standards, engineering templates, and 100% app-code coverage thresholds.
+OpenAPI drift checks, Mastra governance/evaluation checks, local gate config, Milaha standards,
+engineering templates, ARC-style AI governance templates, and 100% app-code coverage thresholds.
+
+Mastra is generated as a replaceable orchestration layer. Keep authentication, authorization,
+business rules, validation, audit, rate limits, and approval decisions in the backend API.
 
 ## Development
 

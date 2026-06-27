@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { agentRuntimeAdapters } from "./adapters/agent-runtime.js";
 import { backendAdapters } from "./adapters/backend.js";
 import { frontendAdapters } from "./adapters/frontend.js";
 import { LocalCommandRunner, consoleLogger } from "./command-runner.js";
@@ -103,6 +104,7 @@ export async function initProject(
   const commands: CommandSpec[] = [];
   const backendAdapter = backendAdapters[config.backend];
   const frontendAdapter = frontendAdapters[config.frontend];
+  const agentRuntimeAdapter = agentRuntimeAdapters[config.agentRuntime];
 
   if (!backendAdapter) {
     throw new Error(`No backend adapter registered for ${config.backend}.`);
@@ -110,6 +112,10 @@ export async function initProject(
 
   if (!frontendAdapter) {
     throw new Error(`No frontend adapter registered for ${config.frontend}.`);
+  }
+
+  if (!agentRuntimeAdapter) {
+    throw new Error(`No agent runtime adapter registered for ${config.agentRuntime}.`);
   }
 
   if (!config.dryRun) {
@@ -161,7 +167,11 @@ export async function initProject(
     await runCommand(frontendCommand, commands, config, commandRunner, runExternalGenerators);
   }
 
-  for (const file of [...backendAdapter.files(config), ...frontendAdapter.files(config)]) {
+  for (const file of [
+    ...backendAdapter.files(config),
+    ...frontendAdapter.files(config),
+    ...agentRuntimeAdapter.files(config)
+  ]) {
     writtenFiles.push(await writeGeneratedFile(config.targetDir, file, config.dryRun));
   }
 

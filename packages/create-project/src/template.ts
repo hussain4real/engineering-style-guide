@@ -3,10 +3,16 @@ import type { StarterConfig } from "./types.js";
 export type TemplateTokens = Record<string, string>;
 
 export function tokenMap(config: StarterConfig): TemplateTokens {
-  const versionSyncFiles =
-    config.backend === "nestjs"
-      ? "VERSION, package.json, CHANGELOG.md"
-      : "VERSION, apps/api/pyproject.toml, CHANGELOG.md";
+  const versionSyncFiles = [
+    "VERSION",
+    config.backend === "fastapi" ? "apps/api/pyproject.toml" : "package.json",
+    config.backend === "fastapi" && (config.agentRuntime === "mastra" || config.frontend === "nextjs")
+      ? "package.json"
+      : null,
+    "CHANGELOG.md"
+  ]
+    .filter(Boolean)
+    .join(", ");
 
   return {
     PROJECT_NAME: config.projectName,

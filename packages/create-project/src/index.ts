@@ -12,6 +12,9 @@ export { parseArgs } from "./cli.js";
 export { renderCiWorkflow } from "./ci.js";
 export { renderTemplate, tokenMap, unresolvedTokens } from "./template.js";
 export type {
+  AgentRuntime,
+  AgentRuntimeAdapter,
+  AiObservability,
   BackendAdapter,
   BackendFramework,
   CommandRunner,
@@ -21,8 +24,11 @@ export type {
   FrontendFramework,
   GeneratedFile,
   GenerationOptions,
+  GovernanceProfile,
   InitResult,
   Overlay,
   StarterConfig,
-  StarterConfigInput
+  StarterConfigInput,
+  TelemetryProvider,
+  WorkflowRuntime
 } from "./types.js";

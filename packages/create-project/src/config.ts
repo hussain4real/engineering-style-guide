@@ -1,14 +1,19 @@
 import path from "node:path";
 import {
+  agentRuntimeChoices,
+  aiObservabilityChoices,
   backendChoices,
+  telemetryChoices,
   type BackendFramework,
   type CoveragePolicy,
   frontendChoices,
   type FrontendFramework,
   type GateEngine,
+  type GovernanceProfile,
   type PrimaryLanguage,
   type StarterConfig,
-  type StarterConfigInput
+  type StarterConfigInput,
+  workflowRuntimeChoices
 } from "./types.js";
 
 const defaultCoveragePolicy: CoveragePolicy = {
@@ -76,9 +81,27 @@ export function normalizeConfig(input: StarterConfigInput = {}, cwd = process.cw
   const frontend = input.frontend ?? "none";
   assertChoice(frontend, frontendChoices, "Frontend framework");
 
+  const agentRuntime = input.agentRuntime ?? "mastra";
+  assertChoice(agentRuntime, agentRuntimeChoices, "Agent runtime");
+
+  const aiObservability =
+    input.aiObservability ?? (agentRuntime === "mastra" ? "langfuse" : "none");
+  assertChoice(aiObservability, aiObservabilityChoices, "AI observability");
+
+  if (agentRuntime === "none" && aiObservability === "langfuse") {
+    throw new Error("Langfuse observability requires Mastra agent runtime.");
+  }
+
+  const telemetry = input.telemetry ?? "opentelemetry";
+  assertChoice(telemetry, telemetryChoices, "Telemetry provider");
+
+  const workflowRuntime = input.workflowRuntime ?? "none";
+  assertChoice(workflowRuntime, workflowRuntimeChoices, "Workflow runtime");
+
   const projectName = input.projectName?.trim() || titleFromSlug(projectSlug);
   const targetDir = path.resolve(cwd, input.targetDir ?? projectSlug);
   const primaryLanguage = primaryLanguageForBackend(backend);
+  const governanceProfile: GovernanceProfile = agentRuntime === "mastra" ? "agentic" : "standard";
 
   return {
     targetDir,
@@ -89,6 +112,11 @@ export function normalizeConfig(input: StarterConfigInput = {}, cwd = process.cw
     backend,
     primaryLanguage,
     frontend,
+    agentRuntime,
+    aiObservability,
+    telemetry,
+    workflowRuntime,
+    governanceProfile,
     includeHarness: input.includeHarness ?? true,
     installDependencies: input.installDependencies ?? true,
     initializeGit: input.initializeGit ?? true,
@@ -101,5 +129,5 @@ export function normalizeConfig(input: StarterConfigInput = {}, cwd = process.cw
 }
 
 export function hasNodeWorkspace(config: StarterConfig): boolean {
-  return config.backend === "nestjs" || config.frontend === "nextjs";
+  return config.backend === "nestjs" || config.frontend === "nextjs" || config.agentRuntime === "mastra";
 }

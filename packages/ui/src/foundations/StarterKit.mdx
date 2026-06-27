@@ -5,8 +5,8 @@ import { Meta } from "@storybook/addon-docs/blocks";
 # Starter Kit
 
 New Milaha application repositories should start from the internal starter kit CLI. It scaffolds the
-project structure, standards, CI, security checks, 100% app-code coverage, and the optional Claude
-harness in one guided walkthrough.
+project structure, standards, CI, security checks, 100% app-code coverage, governed Mastra agent
+runtime, and the optional Claude harness in one guided walkthrough.
 
 ## Command
 
@@ -26,6 +26,10 @@ pnpm dlx @qatar-navigation-milaha/create-project milaha init my-service
 | --- | --- | --- |
 | Backend | NestJS / TypeScript, FastAPI / Python | NestJS |
 | Frontend | None, Next.js / React | None |
+| Agent orchestration runtime | Mastra AI, none | Mastra AI |
+| AI observability | Langfuse, none | Langfuse when Mastra is enabled |
+| Telemetry | OpenTelemetry, none | OpenTelemetry |
+| Durable workflow runtime | None, Temporal scaffold | None |
 | Claude harness | Install, skip | Install |
 | Dependency install | Install, skip | Install |
 | Git initialization | Initialize, skip | Initialize |
@@ -34,10 +38,18 @@ pnpm dlx @qatar-navigation-milaha/create-project milaha init my-service
 
 - `apps/api` for NestJS or FastAPI.
 - Optional `apps/web` for Next.js.
+- `apps/agents` for Mastra orchestration when the agent runtime is enabled.
+- `contracts/openapi`, `contracts/api-governance`, and agent-tool contracts for review gates.
 - `docs/standards` and `docs/templates` copied from this guide.
 - `.github/workflows/ci.yml` with lint, typecheck, build, tests, 100% coverage, SAST, secret scanning, and dependency audit.
-- `.milaha/starter-manifest.json` with selected stack, starter version, overlays, and coverage policy.
+- `.milaha/starter-manifest.json` with selected stack, governance profile, starter version, overlays, and coverage policy.
 - Optional `.claude`, `harness`, `compliance`, and `product` governance files from the Milaha agent harness.
+
+## Agentic Boundary
+
+Mastra is generated as a replaceable orchestration layer in `apps/agents`. The backend in `apps/api`
+remains responsible for authentication, authorization, business rules, validation, audit, rate
+limits, and human approval decisions.
 
 ## Coverage Rule
 

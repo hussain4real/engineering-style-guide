@@ -1,7 +1,15 @@
 import readline from "node:readline/promises";
 import { stdin as input, stdout as output } from "node:process";
 import { slugify, titleFromSlug } from "./config.js";
-import type { BackendFramework, FrontendFramework, StarterConfigInput } from "./types.js";
+import type {
+  AgentRuntime,
+  AiObservability,
+  BackendFramework,
+  FrontendFramework,
+  StarterConfigInput,
+  TelemetryProvider,
+  WorkflowRuntime
+} from "./types.js";
 
 export interface PromptIo {
   ask(question: string): Promise<string>;
@@ -115,6 +123,52 @@ export async function collectPromptInput(
         ],
         "none"
       ));
+    const agentRuntime =
+      inputConfig.agentRuntime ??
+      (await askOption<AgentRuntime>(
+        io,
+        "Agent orchestration runtime",
+        [
+          { value: "mastra", label: "Mastra AI (governed agent runtime)" },
+          { value: "none", label: "None" }
+        ],
+        "mastra"
+      ));
+    const aiObservability =
+      inputConfig.aiObservability ??
+      (agentRuntime === "mastra"
+        ? await askOption<AiObservability>(
+            io,
+            "AI observability",
+            [
+              { value: "langfuse", label: "Langfuse traces, cost, and evaluation metadata" },
+              { value: "none", label: "None" }
+            ],
+            "langfuse"
+          )
+        : "none");
+    const telemetry =
+      inputConfig.telemetry ??
+      (await askOption<TelemetryProvider>(
+        io,
+        "Telemetry",
+        [
+          { value: "opentelemetry", label: "OpenTelemetry trace context" },
+          { value: "none", label: "None" }
+        ],
+        "opentelemetry"
+      ));
+    const workflowRuntime =
+      inputConfig.workflowRuntime ??
+      (await askOption<WorkflowRuntime>(
+        io,
+        "Durable workflow runtime",
+        [
+          { value: "none", label: "None" },
+          { value: "temporal", label: "Temporal scaffold" }
+        ],
+        "none"
+      ));
     const includeHarness =
       inputConfig.includeHarness ?? (await askBoolean(io, "Install Claude harness", true));
     const installDependencies =
@@ -129,6 +183,10 @@ export async function collectPromptInput(
       projectOneLiner,
       backend,
       frontend,
+      agentRuntime,
+      aiObservability,
+      telemetry,
+      workflowRuntime,
       includeHarness,
       installDependencies,
       initializeGit

@@ -1,10 +1,19 @@
 export const backendChoices = ["nestjs", "fastapi"] as const;
 export const frontendChoices = ["none", "nextjs"] as const;
+export const agentRuntimeChoices = ["none", "mastra"] as const;
+export const aiObservabilityChoices = ["none", "langfuse"] as const;
+export const telemetryChoices = ["none", "opentelemetry"] as const;
+export const workflowRuntimeChoices = ["none", "temporal"] as const;
 
 export type BackendFramework = (typeof backendChoices)[number];
 export type FrontendFramework = (typeof frontendChoices)[number];
+export type AgentRuntime = (typeof agentRuntimeChoices)[number];
+export type AiObservability = (typeof aiObservabilityChoices)[number];
+export type TelemetryProvider = (typeof telemetryChoices)[number];
+export type WorkflowRuntime = (typeof workflowRuntimeChoices)[number];
 export type PrimaryLanguage = "TypeScript" | "Python";
 export type GateEngine = "lefthook" | "pre-commit";
+export type GovernanceProfile = "standard" | "agentic";
 
 export interface CoveragePolicy {
   appCodePercent: 100;
@@ -19,6 +28,11 @@ export interface StarterConfig {
   backend: BackendFramework;
   primaryLanguage: PrimaryLanguage;
   frontend: FrontendFramework;
+  agentRuntime: AgentRuntime;
+  aiObservability: AiObservability;
+  telemetry: TelemetryProvider;
+  workflowRuntime: WorkflowRuntime;
+  governanceProfile: GovernanceProfile;
   includeHarness: boolean;
   installDependencies: boolean;
   initializeGit: boolean;
@@ -36,6 +50,10 @@ export interface StarterConfigInput {
   projectOneLiner?: string;
   backend?: BackendFramework;
   frontend?: FrontendFramework;
+  agentRuntime?: AgentRuntime;
+  aiObservability?: AiObservability;
+  telemetry?: TelemetryProvider;
+  workflowRuntime?: WorkflowRuntime;
   includeHarness?: boolean;
   installDependencies?: boolean;
   initializeGit?: boolean;
@@ -90,6 +108,12 @@ export interface FrontendAdapter {
   id: FrontendFramework;
   label: string;
   externalCommand(config: StarterConfig): CommandSpec | null;
+  files(config: StarterConfig): GeneratedFile[];
+}
+
+export interface AgentRuntimeAdapter {
+  id: AgentRuntime;
+  label: string;
   files(config: StarterConfig): GeneratedFile[];
 }
 

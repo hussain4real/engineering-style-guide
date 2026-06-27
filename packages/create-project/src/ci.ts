@@ -1,9 +1,42 @@
 import type { StarterConfig } from "./types.js";
+import { hasNodeWorkspace } from "./config.js";
 
 function nodeSteps(config: StarterConfig): string {
-  if (config.backend !== "nestjs" && config.frontend !== "nextjs") {
+  if (!hasNodeWorkspace(config)) {
     return "";
   }
+
+  const agentSteps =
+    config.agentRuntime === "mastra"
+      ? `
+      - name: Check agent governance baseline
+        run: pnpm run governance:check
+
+      - name: Run baseline agent evaluations
+        run: pnpm run eval:baseline
+`
+      : "";
+
+  const langfuseSteps =
+    config.aiObservability === "langfuse"
+      ? `
+      - name: Validate Langfuse configuration surface
+        run: |
+          test -f apps/agents/.env.example
+          grep -q LANGFUSE_PUBLIC_KEY apps/agents/.env.example
+          grep -q LANGFUSE_SECRET_KEY apps/agents/.env.example
+`
+      : "";
+
+  const traceTagSteps =
+    config.agentRuntime === "mastra" && config.telemetry === "opentelemetry"
+      ? `
+      - name: Validate OpenTelemetry trace tag policy
+        run: |
+          test -f contracts/observability/trace-tags.md
+          grep -q milaha.correlation_id contracts/observability/trace-tags.md
+`
+      : "";
 
   return `
       - name: Setup pnpm
@@ -29,6 +62,10 @@ function nodeSteps(config: StarterConfig): string {
 
       - name: Test Node workspaces with 100% app-code coverage
         run: pnpm run test:coverage
+
+      - name: Check OpenAPI contracts
+        run: pnpm run openapi:check
+${agentSteps}${langfuseSteps}${traceTagSteps}
 
       - name: Audit Node dependencies
         run: pnpm audit --audit-level=moderate
@@ -68,6 +105,10 @@ function pythonSteps(config: StarterConfig): string {
       - name: Test Python with 100% app-code coverage
         working-directory: apps/api
         run: uv run pytest --cov=app --cov-report=term-missing --cov-fail-under=100
+
+      - name: Check OpenAPI contract
+        working-directory: apps/api
+        run: uv run python scripts/export_openapi.py --check
 
       - name: Python SAST
         working-directory: apps/api

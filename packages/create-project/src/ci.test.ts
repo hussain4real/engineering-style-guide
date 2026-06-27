@@ -14,6 +14,11 @@ describe("renderCiWorkflow", () => {
 
     expect(workflow).toContain("pnpm run lint");
     expect(workflow).toContain("pnpm run test:coverage");
+    expect(workflow).toContain("pnpm run openapi:check");
+    expect(workflow).toContain("pnpm run governance:check");
+    expect(workflow).toContain("pnpm run eval:baseline");
+    expect(workflow).toContain("LANGFUSE_PUBLIC_KEY");
+    expect(workflow).toContain("milaha.correlation_id");
     expect(workflow).toContain("gitleaks/gitleaks-action");
     expect(workflow).toContain("100% app-code coverage");
     expect(workflow).toContain("pnpm audit --audit-level=moderate");
@@ -30,6 +35,8 @@ describe("renderCiWorkflow", () => {
     expect(workflow).toContain("astral-sh/setup-uv");
     expect(workflow).toContain("uv run bandit -q -r app");
     expect(workflow).toContain("uv run pip-audit");
+    expect(workflow).toContain("uv run python scripts/export_openapi.py --check");
+    expect(workflow).toContain("Check agent governance baseline");
     expect(workflow).toContain("uv run pytest --cov=app --cov-report=term-missing --cov-fail-under=100");
   });
 });

@@ -87,9 +87,13 @@ binary for new project scaffolding:
 milaha init my-service
 ```
 
-V1 supports NestJS and FastAPI backends, optional Next.js, GitHub CI, security checks, shared
-standards/templates, optional Claude harness installation, and 100% coverage enforcement for
-project-owned app code. The package is published internally to GitHub Packages.
+V1 supports NestJS and FastAPI backends, optional Next.js, Mastra AI agent orchestration, Langfuse
+AI observability, OpenTelemetry trace-tag scaffolding, OpenAPI contract gates, GitHub CI, security
+checks, shared standards/templates, optional Claude harness installation, and 100% coverage
+enforcement for project-owned app code. The package is published internally to GitHub Packages.
+
+Generated Mastra projects keep agents in `apps/agents` and preserve `apps/api` as the boundary for
+authentication, authorization, business rules, validation, audit, rate limits, and approvals.
 
 ## Engineering guidelines
 

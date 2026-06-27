@@ -1,5 +1,29 @@
 import type { BackendAdapter, GeneratedFile, StarterConfig } from "../types.js";
 
+function openApiContractObject(config: StarterConfig) {
+  return {
+    openapi: "3.1.0",
+    info: {
+      title: `${config.projectName} API`,
+      version: "0.1.0",
+      description: config.projectOneLiner
+    },
+    paths: {
+      "/health": {
+        get: {
+          operationId: "getHealth",
+          tags: ["health"],
+          responses: {
+            "200": {
+              description: "Service health response"
+            }
+          }
+        }
+      }
+    }
+  };
+}
+
 function nestPackage(config: StarterConfig): string {
   return JSON.stringify(
     {
@@ -14,12 +38,16 @@ function nestPackage(config: StarterConfig): string {
         test: "vitest --run",
         "test:coverage": "vitest --run --coverage",
         start: "node dist/main.js",
-        dev: "tsx watch src/main.ts"
+        dev: "tsx watch src/main.ts",
+        "openapi:generate": "tsx src/openapi.ts",
+        "openapi:check": "tsx src/openapi.ts --check"
       },
       dependencies: {
         "@nestjs/common": "^11.1.6",
         "@nestjs/core": "^11.1.6",
         "@nestjs/platform-express": "^11.1.6",
+        "@nestjs/swagger": "^11.2.3",
+        ...(config.telemetry === "opentelemetry" ? { "@opentelemetry/api": "^1.9.1" } : {}),
         "reflect-metadata": "^0.2.2",
         rxjs: "^7.8.2"
       },
@@ -110,7 +138,13 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       include: ["src/**/*.ts"],
-      exclude: ["src/main.ts", "src/**/*.module.ts", "src/**/*.spec.ts"],
+      exclude: [
+        "src/main.ts",
+        "src/openapi.ts",
+        "src/governance/trace-context.ts",
+        "src/**/*.module.ts",
+        "src/**/*.spec.ts"
+      ],
       thresholds: {
         statements: 100,
         branches: 100,
@@ -177,6 +211,129 @@ describe("HealthController", () => {
   });
 });
 `
+    },
+    {
+      path: "apps/api/src/governance/rbac.ts",
+      content: `export type ApiScope = "health:read";
+
+export const routeScopeMap = {
+  "GET /health": ["health:read"]
+} as const satisfies Record<string, readonly ApiScope[]>;
+
+export function scopesForRoute(route: keyof typeof routeScopeMap) {
+  return routeScopeMap[route];
+}
+
+export function hasRequiredScope(userScopes: readonly string[], requiredScope: ApiScope) {
+  return userScopes.includes(requiredScope);
+}
+`
+    },
+    {
+      path: "apps/api/src/governance/audit.ts",
+      content: `export interface AuditEventInput {
+  actorId: string;
+  action: string;
+  resource: string;
+  correlationId: string;
+}
+
+export function createAuditEvent(input: AuditEventInput) {
+  return {
+    ...input,
+    source: "${config.projectSlug}-api",
+    schemaVersion: "2026-06-27",
+    emittedAt: new Date(0).toISOString()
+  };
+}
+`
+    },
+    {
+      path: "apps/api/src/governance/trace-context.ts",
+      content:
+        config.telemetry === "opentelemetry"
+          ? `import { trace } from "@opentelemetry/api";
+
+export function currentTraceId() {
+  return trace.getActiveSpan()?.spanContext().traceId ?? "untraced";
+}
+`
+          : `export function currentTraceId() {
+  return "untraced";
+}
+`
+    },
+    {
+      path: "apps/api/src/governance/governance.spec.ts",
+      content: `import { describe, expect, it } from "vitest";
+import { createAuditEvent } from "./audit.js";
+import { hasRequiredScope, scopesForRoute } from "./rbac.js";
+import { currentTraceId } from "./trace-context.js";
+
+describe("API governance boundary", () => {
+  it("maps routes to API scopes", () => {
+    expect(scopesForRoute("GET /health")).toEqual(["health:read"]);
+    expect(hasRequiredScope(["health:read"], "health:read")).toBe(true);
+  });
+
+  it("creates SIEM-shaped audit events", () => {
+    expect(
+      createAuditEvent({
+        actorId: "system",
+        action: "health.check",
+        resource: "health",
+        correlationId: "corr-1"
+      })
+    ).toMatchObject({
+      source: "${config.projectSlug}-api",
+      schemaVersion: "2026-06-27",
+      correlationId: "corr-1"
+    });
+  });
+
+  it("provides a trace fallback for local execution", () => {
+    expect(currentTraceId()).toBe("untraced");
+  });
+});
+`
+    },
+    {
+      path: "apps/api/src/openapi.ts",
+      content: `import fs from "node:fs/promises";
+import path from "node:path";
+import { pathToFileURL } from "node:url";
+
+export const openApiContract = ${JSON.stringify(openApiContractObject(config), null, 2)} as const;
+
+export function openApiContractPath() {
+  return path.resolve(process.cwd(), "../../contracts/openapi/api.json");
+}
+
+export async function writeOpenApiContract() {
+  const target = openApiContractPath();
+  await fs.mkdir(path.dirname(target), { recursive: true });
+  await fs.writeFile(target, JSON.stringify(openApiContract, null, 2) + "\\n");
+}
+
+export async function checkOpenApiContract() {
+  const expected = JSON.stringify(openApiContract, null, 2) + "\\n";
+  const current = await fs.readFile(openApiContractPath(), "utf8");
+  return current === expected;
+}
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  if (process.argv.includes("--check")) {
+    const ok = await checkOpenApiContract();
+
+    if (!ok) {
+      console.error("OpenAPI contract is out of date. Run pnpm openapi:generate.");
+      process.exitCode = 1;
+    }
+  } else {
+    await writeOpenApiContract();
+  }
+}
+`
     }
   ];
 }
@@ -200,7 +357,7 @@ description = "${config.projectOneLiner}"
 requires-python = ">=3.12"
 dependencies = [
   "fastapi>=0.115.0",
-  "uvicorn[standard]>=0.34.0"
+${config.telemetry === "opentelemetry" ? '  "opentelemetry-api>=1.29.0",\n' : ""}  "uvicorn[standard]>=0.34.0"
 ]
 
 [dependency-groups]
@@ -232,7 +389,7 @@ addopts = "--cov=app --cov-report=term-missing --cov-fail-under=100"
 
 [tool.coverage.run]
 source = ["app"]
-omit = ["app/__init__.py"]
+omit = ["app/__init__.py", "app/openapi.py", "app/governance/trace_context.py"]
 
 [tool.coverage.report]
 fail_under = 100
@@ -247,12 +404,132 @@ show_missing = true
       path: "apps/api/app/main.py",
       content: `from fastapi import FastAPI
 
-app = FastAPI(title="${config.projectName} API")
+from app.openapi import build_openapi_contract
+
+app = FastAPI(
+    title="${config.projectName} API",
+    version="0.1.0",
+    description="${config.projectOneLiner}",
+)
+
+
+def custom_openapi() -> dict[str, object]:
+    return build_openapi_contract()
+
+
+app.openapi = custom_openapi  # type: ignore[method-assign]
 
 
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok", "service": "${config.projectSlug}"}
+`
+    },
+    {
+      path: "apps/api/app/openapi.py",
+      content: `def build_openapi_contract() -> dict[str, object]:
+    return ${JSON.stringify(openApiContractObject(config), null, 4).replace(/\n/g, "\n    ")}
+`
+    },
+    {
+      path: "apps/api/app/governance/__init__.py",
+      content: ""
+    },
+    {
+      path: "apps/api/app/governance/rbac.py",
+      content: `from typing import Literal
+
+ApiScope = Literal["health:read"]
+
+ROUTE_SCOPE_MAP: dict[str, tuple[ApiScope, ...]] = {
+    "GET /health": ("health:read",),
+}
+
+
+def scopes_for_route(route: str) -> tuple[ApiScope, ...]:
+    return ROUTE_SCOPE_MAP[route]
+
+
+def has_required_scope(user_scopes: tuple[str, ...], required_scope: ApiScope) -> bool:
+    return required_scope in user_scopes
+`
+    },
+    {
+      path: "apps/api/app/governance/audit.py",
+      content: `from dataclasses import dataclass
+
+
+@dataclass(frozen=True)
+class AuditEventInput:
+    actor_id: str
+    action: str
+    resource: str
+    correlation_id: str
+
+
+def create_audit_event(event: AuditEventInput) -> dict[str, str]:
+    return {
+        "actor_id": event.actor_id,
+        "action": event.action,
+        "resource": event.resource,
+        "correlation_id": event.correlation_id,
+        "source": "${config.projectSlug}-api",
+        "schema_version": "2026-06-27",
+        "emitted_at": "1970-01-01T00:00:00+00:00",
+    }
+`
+    },
+    {
+      path: "apps/api/app/governance/trace_context.py",
+      content:
+        config.telemetry === "opentelemetry"
+          ? `from opentelemetry import trace
+
+
+def current_trace_id() -> str:
+    span_context = trace.get_current_span().get_span_context()
+    if not span_context.is_valid:
+        return "untraced"
+    return format(span_context.trace_id, "032x")
+`
+          : `def current_trace_id() -> str:
+    return "untraced"
+`
+    },
+    {
+      path: "apps/api/scripts/export_openapi.py",
+      content: `import json
+import sys
+from pathlib import Path
+
+from app.main import app
+
+
+def contract_path() -> Path:
+    return Path(__file__).resolve().parents[3] / "contracts" / "openapi" / "api.json"
+
+
+def rendered_contract() -> str:
+    return json.dumps(app.openapi(), indent=2) + "\\n"
+
+
+def write_contract() -> None:
+    target = contract_path()
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(rendered_contract(), encoding="utf-8")
+
+
+def check_contract() -> bool:
+    return contract_path().read_text(encoding="utf-8") == rendered_contract()
+
+
+if __name__ == "__main__":
+    if "--check" in sys.argv:
+        if not check_contract():
+            print("OpenAPI contract is out of date. Run uv run python scripts/export_openapi.py.")
+            raise SystemExit(1)
+    else:
+        write_contract()
 `
     },
     {
@@ -267,6 +544,44 @@ def test_health_endpoint() -> None:
 
     assert response.status_code == 200
     assert response.json() == {"status": "ok", "service": "${config.projectSlug}"}
+
+
+def test_openapi_contract_is_customized() -> None:
+    contract = app.openapi()
+
+    assert contract["info"]["title"] == "${config.projectName} API"
+    assert contract["paths"]["/health"]["get"]["operationId"] == "getHealth"
+`
+    },
+    {
+      path: "apps/api/tests/test_governance.py",
+      content: `from app.governance.audit import AuditEventInput, create_audit_event
+from app.governance.rbac import has_required_scope, scopes_for_route
+from app.governance.trace_context import current_trace_id
+
+
+def test_route_scopes() -> None:
+    assert scopes_for_route("GET /health") == ("health:read",)
+    assert has_required_scope(("health:read",), "health:read") is True
+
+
+def test_audit_event_shape() -> None:
+    event = create_audit_event(
+        AuditEventInput(
+            actor_id="system",
+            action="health.check",
+            resource="health",
+            correlation_id="corr-1",
+        )
+    )
+
+    assert event["source"] == "${config.projectSlug}-api"
+    assert event["schema_version"] == "2026-06-27"
+    assert event["correlation_id"] == "corr-1"
+
+
+def test_trace_fallback() -> None:
+    assert current_trace_id() == "untraced"
 `
     }
   ];

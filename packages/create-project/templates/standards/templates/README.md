@@ -26,6 +26,13 @@ Every template starts with:
 | [Feature Brief / PRD-lite](./feature-brief-prd-lite-template.md) | The team needs lightweight product intent before a full BRS is justified. |
 | [ADR](./adr-template.md) | A technical decision should be recorded with context and tradeoffs. |
 | [API Contract](./api-contract-template.md) | Teams need stable endpoint, payload, auth, validation, and error expectations. |
+| [Agentic AI Use Case Registration](./agentic-ai-use-case-registration-template.md) | An AI agent or tool-capable workflow needs formal ownership, scope, and review. |
+| [Agent Tool Registry](./agent-tool-registry-template.md) | A Mastra or future agent runtime needs governed tool metadata and approval rules. |
+| [Agent Guardrails](./agent-guardrails-template.md) | Teams need runtime, safety, prompt-injection, output, and human-approval controls. |
+| [Agent Evaluation Plan](./agent-evaluation-plan-template.md) | Agent behavior needs baseline, regression, quality, cost, or safety evaluation evidence. |
+| [AI Data Classification](./ai-data-classification-template.md) | Prompts, completions, retrieved context, tool I/O, traces, or eval data need classification. |
+| [AI Production Readiness](./ai-production-readiness-template.md) | An AI-enabled feature is ready for production review. |
+| [Model and Provider Approval](./model-provider-approval-template.md) | A model/provider choice needs architecture and security approval before production use. |
 | [Test Plan](./test-plan-template.md) | A feature needs explicit testing scope and acceptance coverage. |
 | [Release Checklist](./release-checklist-template.md) | A change is ready to ship and needs deployment readiness checks. |
 | [Runbook](./runbook-template.md) | A released service or workflow needs operating instructions. |

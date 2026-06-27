@@ -46,11 +46,18 @@ describe("initProject", () => {
     const root = path.join(cwd, "port-ops");
 
     expect(result.files).toContain("apps/api/package.json");
+    expect(result.files).toContain("apps/agents/package.json");
     expect(await exists(root, ".claude/agents/port-ops-sme.md")).toBe(true);
+    expect(await exists(root, ".claude/playbooks/mastra-agent-migration.md")).toBe(true);
     expect(await exists(root, "harness/AI_INVENTORY.yaml")).toBe(true);
     expect(await exists(root, "docs/standards/starter-kit.md")).toBe(true);
+    expect(await exists(root, "contracts/agent-tools/tool-registry.yaml")).toBe(true);
+    expect(await readFile(root, "apps/agents/package.json")).toContain("@mastra/core");
+    expect(await readFile(root, "apps/agents/package.json")).toContain("@mastra/langfuse");
     expect(await readFile(root, ".github/workflows/ci.yml")).toContain("pnpm run test:coverage");
+    expect(await readFile(root, ".github/workflows/ci.yml")).toContain("pnpm run eval:baseline");
     expect(await readFile(root, ".milaha/starter-manifest.json")).toContain("\"harness\": true");
+    expect(await readFile(root, ".milaha/starter-manifest.json")).toContain("\"agentRuntime\": \"mastra\"");
     expect(runner.commands).toHaveLength(0);
   });
 
@@ -75,9 +82,13 @@ describe("initProject", () => {
     const root = path.join(cwd, "cargo-api");
 
     expect(await exists(root, "apps/api/pyproject.toml")).toBe(true);
+    expect(await exists(root, "apps/agents/package.json")).toBe(true);
     expect(await exists(root, ".pre-commit-config.yaml")).toBe(true);
     expect(await exists(root, ".claude")).toBe(false);
+    expect(await exists(root, ".claude/playbooks/mastra-agent-migration.md")).toBe(false);
     expect(await readFile(root, ".github/workflows/ci.yml")).toContain("uv run pip-audit");
+    expect(await readFile(root, ".github/workflows/ci.yml")).toContain("Check agent governance baseline");
+    expect(await readFile(root, "apps/api/scripts/export_openapi.py")).toContain("app.openapi()");
     expect(await readFile(root, ".milaha/starter-manifest.json")).toContain("\"harness\": false");
   });
 
@@ -103,10 +114,67 @@ describe("initProject", () => {
     const root = path.join(cwd, "portal");
 
     expect(await exists(root, "apps/web/package.json")).toBe(true);
+    expect(await exists(root, "apps/agents/package.json")).toBe(true);
     expect(await readFile(root, "apps/web/tailwind.config.ts")).toContain(
       "@qatar-navigation-milaha/ui/tailwind-preset"
     );
     expect(await readFile(root, ".github/workflows/ci.yml")).toContain("pnpm audit");
+  });
+
+  it("can disable the agent runtime", async () => {
+    const cwd = await tempRoot();
+    await initProject(
+      {
+        targetDir: "plain-api",
+        projectName: "Plain API",
+        backend: "nestjs",
+        agentRuntime: "none",
+        aiObservability: "none",
+        includeHarness: false,
+        installDependencies: false,
+        initializeGit: false
+      },
+      {
+        cwd,
+        packageRoot: packageRootFrom(),
+        commandRunner: new RecordingCommandRunner(),
+        runExternalGenerators: false
+      }
+    );
+    const root = path.join(cwd, "plain-api");
+
+    expect(await exists(root, "apps/agents/package.json")).toBe(false);
+    expect(await readFile(root, ".milaha/starter-manifest.json")).toContain(
+      "\"agentRuntime\": \"none\""
+    );
+  });
+
+  it("generates the optional Temporal scaffold", async () => {
+    const cwd = await tempRoot();
+    await initProject(
+      {
+        targetDir: "workflow-api",
+        projectName: "Workflow API",
+        backend: "nestjs",
+        workflowRuntime: "temporal",
+        includeHarness: false,
+        installDependencies: false,
+        initializeGit: false
+      },
+      {
+        cwd,
+        packageRoot: packageRootFrom(),
+        commandRunner: new RecordingCommandRunner(),
+        runExternalGenerators: false
+      }
+    );
+    const root = path.join(cwd, "workflow-api");
+
+    expect(await exists(root, "apps/agents/src/workflows/temporal.ts")).toBe(true);
+    expect(await readFile(root, "apps/agents/package.json")).toContain("@temporalio/client");
+    expect(await readFile(root, ".milaha/starter-manifest.json")).toContain(
+      "\"workflowRuntime\": \"temporal\""
+    );
   });
 
   it("supports dry runs without creating the target directory", async () => {
