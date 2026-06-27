@@ -1,6 +1,6 @@
 {
   "name": "@qatar-navigation-milaha/create-project",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Interactive Milaha project starter CLI.",
   "license": "UNLICENSED",
   "type": "module",

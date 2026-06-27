@@ -471,7 +471,7 @@ regexes = [
       content: `${JSON.stringify(
         {
           starterPackage: "@qatar-navigation-milaha/create-project",
-          starterVersion: "0.1.0",
+          starterVersion: "0.1.1",
           generatedAt: new Date().toISOString().slice(0, 10),
           project: {
             name: config.projectName,

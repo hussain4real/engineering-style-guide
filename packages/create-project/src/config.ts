@@ -44,7 +44,15 @@ export function titleFromSlug(slug: string): string {
 }
 
 export function assertValidSlug(slug: string): void {
-  if (!/^[a-z0-9][a-z0-9-]*[a-z0-9]$|^[a-z0-9]$/.test(slug)) {
+  const isValidCharacter = (character: string) =>
+    (character >= "a" && character <= "z") ||
+    (character >= "0" && character <= "9") ||
+    character === "-";
+  const hasValidCharacters = [...slug].every(isValidCharacter);
+  const hasValidEdges =
+    slug.length > 0 && slug[0] !== "-" && slug[slug.length - 1] !== "-";
+
+  if (!hasValidCharacters || !hasValidEdges) {
     throw new Error(
       `Project slug "${slug}" must be kebab-case with lowercase letters, numbers, and hyphens.`
     );
