@@ -10,6 +10,7 @@ import {
 describe("starter config", () => {
   it("slugifies project names", () => {
     expect(slugify("Milaha Port Ops API")).toBe("milaha-port-ops-api");
+    expect(slugify(" 'Port---Ops' / AI!! ")).toBe("port-ops-ai");
   });
 
   it("defaults to NestJS, Mastra, Langfuse, OpenTelemetry, harness enabled, and 100% coverage", () => {

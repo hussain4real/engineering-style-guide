@@ -27,12 +27,34 @@ const defaultCoveragePolicy: CoveragePolicy = {
 };
 
 export function slugify(value: string): string {
-  return value
-    .trim()
-    .toLowerCase()
-    .replace(/['"]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
+  const slugCharacters: string[] = [];
+  let previousWasSeparator = true;
+
+  for (const character of value.trim().toLowerCase()) {
+    const isLetter = character >= "a" && character <= "z";
+    const isNumber = character >= "0" && character <= "9";
+
+    if (isLetter || isNumber) {
+      slugCharacters.push(character);
+      previousWasSeparator = false;
+      continue;
+    }
+
+    if (character === "'" || character === "\"") {
+      continue;
+    }
+
+    if (!previousWasSeparator) {
+      slugCharacters.push("-");
+      previousWasSeparator = true;
+    }
+  }
+
+  if (slugCharacters[slugCharacters.length - 1] === "-") {
+    slugCharacters.pop();
+  }
+
+  return slugCharacters.join("");
 }
 
 export function titleFromSlug(slug: string): string {
